@@ -23,45 +23,55 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:minHeight="10dip"
             android:onClick="click_button"
             android:text="@string/btn_menu"
-            android:textColor="@android:color/white" />
+            android:textColor="@android:color/white"
+            android:textSize="10sp" />
 
         <Button
             android:id="@+id/button2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:minHeight="10dip"
             android:onClick="click_button2"
             android:text="@string/favourites"
-            android:textColor="@android:color/white" />
+            android:textColor="@android:color/white"
+            android:textSize="10sp" />
 
         <Button
             android:id="@+id/button3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:minHeight="10dip"
             android:onClick="click_button3"
             android:text="@string/watch_later"
-            android:textColor="@android:color/white" />
+            android:textColor="@android:color/white"
+            android:textSize="10sp" />
 
         <Button
             android:id="@+id/button4"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:minHeight="10dip"
             android:onClick="click_button4"
             android:text="@string/compilations"
-            android:textColor="@android:color/white" />
+            android:textColor="@android:color/white"
+            android:textSize="10sp" />
 
         <Button
             android:id="@+id/button5"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:minHeight="10dip"
             android:onClick="click_button5"
             android:text="@string/settings"
-            android:textColor="@android:color/white" />
+            android:textColor="@android:color/white"
+            android:textSize="10sp" />
 
     </LinearLayout>
 
