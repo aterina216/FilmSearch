@@ -20,19 +20,24 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity)
     }
-    fun click_button(View: View){
+
+    fun click_button(View: View) {
         Toast.makeText(this, "Меню", Toast.LENGTH_SHORT).show()
     }
-    fun click_button2(View: View){
+
+    fun click_button2(View: View) {
         Toast.makeText(this, "Избранное", Toast.LENGTH_SHORT).show()
     }
-    fun click_button3(View: View){
+
+    fun click_button3(View: View) {
         Toast.makeText(this, "Посмотреть позже", Toast.LENGTH_SHORT).show()
     }
-    fun click_button4(View: View){
+
+    fun click_button4(View: View) {
         Toast.makeText(this, "Подборки", Toast.LENGTH_SHORT).show()
     }
-    fun click_button5(View: View){
+
+    fun click_button5(View: View) {
         Toast.makeText(this, "Настройки", Toast.LENGTH_SHORT).show()
     }
 }
