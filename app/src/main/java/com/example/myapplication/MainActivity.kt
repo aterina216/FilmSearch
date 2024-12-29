@@ -14,30 +14,49 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.myapplication.ui.theme.MyApplicationTheme
+import com.google.android.material.appbar.MaterialToolbar
+import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity)
+        initNavigation()
     }
 
-    fun click_button(View: View) {
-        Toast.makeText(this, "Меню", Toast.LENGTH_SHORT).show()
-    }
+    fun initNavigation() {
+        var topAppBar: MaterialToolbar = findViewById(R.id.topAppBar)
+        topAppBar.setOnMenuItemClickListener {
+            when (it.itemId) {
+                R.id.settings -> {
+                    Toast.makeText(this, "Настройки", Toast.LENGTH_SHORT).show()
+                    true
+                }
 
-    fun click_button2(View: View) {
-        Toast.makeText(this, "Избранное", Toast.LENGTH_SHORT).show()
-    }
+                else -> false
+            }
+        }
+        var bottom_navigation: BottomNavigationView = findViewById(R.id.bottom_navigation)
+        bottom_navigation.setOnNavigationItemSelectedListener {
 
-    fun click_button3(View: View) {
-        Toast.makeText(this, "Посмотреть позже", Toast.LENGTH_SHORT).show()
-    }
+            when (it.itemId) {
+                R.id.favorites -> {
+                    Toast.makeText(this, "Избранное", Toast.LENGTH_SHORT).show()
+                    true
+                }
 
-    fun click_button4(View: View) {
-        Toast.makeText(this, "Подборки", Toast.LENGTH_SHORT).show()
-    }
+                R.id.watch_later -> {
+                    Toast.makeText(this, "Посмотреть похже", Toast.LENGTH_SHORT).show()
+                    true
+                }
 
-    fun click_button5(View: View) {
-        Toast.makeText(this, "Настройки", Toast.LENGTH_SHORT).show()
+                R.id.selections -> {
+                    Toast.makeText(this, "Подборки", Toast.LENGTH_SHORT).show()
+                    true
+                }
+
+                else -> false
+            }
+        }
     }
 }

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.MyApplication" parent="Theme.Material3.DayNight" />
+
+    <item name="purple_500" type="color">@android:color/black</item>
+    <item name="holo_orange_light" type="color">@android:color/widget_edittext_dark</item>
+    <item name="design_default_color_primary_dark" type="color">@color/purple_200</item>
+</resources>
