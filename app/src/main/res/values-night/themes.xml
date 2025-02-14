@@ -6,4 +6,9 @@
     <item name="purple_500" type="color">@android:color/black</item>
     <item name="holo_orange_light" type="color">@android:color/widget_edittext_dark</item>
     <item name="design_default_color_primary_dark" type="color">@color/purple_200</item>
+    <!-- Base application theme. -->
+    <style name="Base.Theme.FilmSearch" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your dark theme here. -->
+        <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
+    </style>
 </resources>
