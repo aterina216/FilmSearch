@@ -67,4 +67,15 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+    fun launchDetailsFragment(film: Film){
+        val bundle = Bundle()
+        bundle.putParcelable("film", film)
+        val fragment = DetailsFragment()
+        fragment.arguments = bundle
+        supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.fragment_placeholder, fragment)
+            .addToBackStack(null)
+            .commit()
+    }
 }

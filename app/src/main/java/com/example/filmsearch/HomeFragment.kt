@@ -104,13 +104,7 @@ class HomeFragment : Fragment() {
         recv.apply {
             filmsAdapter = FilmListRecyclerAdapter(object : FilmListRecyclerAdapter.OnItemClickListener{
                 override fun click(film: Film) {
-                    val bundle = Bundle()
-                    //Первым параметром указывается ключ, по которому потом будем искать, вторым сам
-                    //передаваемый объект
-                    bundle.putParcelable("film", film)
-                    val intent = Intent(requireContext(), DetailsActivity::class.java)
-                    intent.putExtras(bundle)
-                    startActivity(intent)
+                    (requireActivity() as MainActivity).launchDetailsFragment(film)
                 }
             })
             this?.adapter = filmsAdapter
