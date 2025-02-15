@@ -1,5 +1,7 @@
 package com.example.filmsearch
 
+import android.annotation.SuppressLint
+import android.app.AlertDialog
 import android.app.FragmentManager
 import android.content.Intent
 import android.os.Bundle
@@ -77,5 +79,21 @@ class MainActivity : AppCompatActivity() {
             .replace(R.id.fragment_placeholder, fragment)
             .addToBackStack(null)
             .commit()
+    }
+    @SuppressLint("MissingSuperCall")
+    override fun onBackPressed() {
+        AlertDialog.Builder(this)
+            .setTitle("Вы хотите выйти?")
+            .setIcon(R.drawable.ic_menu_gallery)
+            .setPositiveButton("Да") { _, _ ->
+                finish()
+            }
+            .setNegativeButton("Нет") { _, _ ->
+
+            }
+            .setNeutralButton("Не знаю") { _, _ ->
+                Toast.makeText(this, "Решайся", Toast.LENGTH_SHORT).show()
+            }
+            .show()
     }
 }
