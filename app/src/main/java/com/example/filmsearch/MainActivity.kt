@@ -33,7 +33,6 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-
     fun initNavigation() {
         var topAppBar: MaterialToolbar = findViewById(R.id.topAppBar)
         topAppBar.setOnMenuItemClickListener {
@@ -69,7 +68,8 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
-    fun launchDetailsFragment(film: Film){
+
+    fun launchDetailsFragment(film: Film) {
         val bundle = Bundle()
         bundle.putParcelable("film", film)
         val fragment = DetailsFragment()
@@ -80,20 +80,26 @@ class MainActivity : AppCompatActivity() {
             .addToBackStack(null)
             .commit()
     }
+
     @SuppressLint("MissingSuperCall")
     override fun onBackPressed() {
-        AlertDialog.Builder(this)
-            .setTitle("Вы хотите выйти?")
-            .setIcon(R.drawable.ic_menu_gallery)
-            .setPositiveButton("Да") { _, _ ->
-                finish()
-            }
-            .setNegativeButton("Нет") { _, _ ->
+        if (supportFragmentManager.backStackEntryCount == 1) {
+            AlertDialog.Builder(this)
+                .setTitle("Вы хотите выйти?")
+                .setIcon(R.drawable.home_24)
+                .setPositiveButton("Да") { _, _ ->
+                    finish()
+                }
+                .setNegativeButton("Нет") { _, _ ->
 
-            }
-            .setNeutralButton("Не знаю") { _, _ ->
-                Toast.makeText(this, "Решайся", Toast.LENGTH_SHORT).show()
-            }
-            .show()
+                }
+                .setNeutralButton("Не знаю") { _, _ ->
+                    Toast.makeText(this, "Решайся", Toast.LENGTH_SHORT).show()
+                }
+                .show()
+        }
+        else {
+            super.onBackPressed()
+        }
     }
 }
