@@ -55,6 +55,17 @@
         app:layout_anchorGravity="bottom|right"
         app:srcCompat="@drawable/left_right_arrow_download_arrows_back_up_icon_262055"
         android:tint="@android:color/white"/>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/details_fab_favorites"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        app:borderWidth="0dp"
+        android:backgroundTint="@color/design_default_color_primary_dark"
+        app:layout_anchor="@id/app_bar"
+        app:layout_anchorGravity="left|bottom"
+        app:srcCompat="@drawable/favorite"
+        app:tint="@android:color/white"/>
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
