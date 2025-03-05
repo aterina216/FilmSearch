@@ -6,9 +6,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.filmsearch.databinding.FragmentHomeBinding
+import java.util.Locale
 
 
 // TODO: Rename parameter arguments, choose names that match
@@ -28,6 +30,7 @@ class HomeFragment : Fragment() {
     private var binding: FragmentHomeBinding? = null
     private val bind get() = binding!!
     private lateinit var filmsAdapter: FilmListRecyclerAdapter
+
 
     val filmsDataBase = listOf(
         Film(
@@ -98,6 +101,27 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         val recv = binding?.mainRecycler
         apply_rv(recv)
+        binding?.searchView?.setOnClickListener {
+            binding?.searchView?.isIconified = false
+        }
+        binding?.searchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return true
+            }
+
+            override fun onQueryTextChange(newText: String?): Boolean {
+                if(newText?.isEmpty() == true){
+                    filmsAdapter.addItems(filmsDataBase)
+                    return true
+                }
+                val result = filmsDataBase.filter {
+                    it.title.toLowerCase(Locale.getDefault()).contains(newText!!.toLowerCase(Locale.getDefault()))
+                }
+                filmsAdapter.addItems(result)
+                return true
+            }
+
+        })
 
     }
     fun apply_rv(recv: RecyclerView?){
