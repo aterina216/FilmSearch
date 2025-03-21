@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<set xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Вращение -->
+    <objectAnimator
+        android:duration="1000"
+        android:propertyName="rotation"
+        android:repeatCount="infinite"
+        android:repeatMode="restart"
+        android:valueFrom="0"
+        android:valueTo="360" />
+
+    <!-- Масштабирование -->
+    <objectAnimator
+        android:duration="1000"
+        android:propertyName="scaleX"
+        android:repeatCount="infinite"
+        android:repeatMode="reverse"
+        android:valueFrom="0.5"
+        android:valueTo="1.5" />
+
+    <objectAnimator
+        android:duration="1000"
+        android:propertyName="scaleY"
+        android:repeatCount="infinite"
+        android:repeatMode="reverse"
+        android:valueFrom="0.5"
+        android:valueTo="1.5" />
+
+    <!-- Изменение цвета -->
+    <objectAnimator
+        android:duration="1000"
+        android:propertyName="fillColor"
+        android:repeatCount="infinite"
+        android:repeatMode="reverse"
+        android:valueFrom="@android:color/holo_orange_light"
+        android:valueTo="@android:color/holo_purple" />
+</set>
