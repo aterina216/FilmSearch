@@ -11,6 +11,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.filmsearch.databinding.ActivityMainBinding
@@ -49,22 +50,30 @@ class MainActivity : AppCompatActivity() {
         bottom_navigation.setOnNavigationItemSelectedListener {
 
             when (it.itemId) {
+                R.id.home ->{
+                    val tag = "home"
+                    val fragment = checkFragmentExistence(tag)
+                    changeFragment(fragment?: HomeFragment(), tag)
+                    true
+                }
                 R.id.favorites -> {
-                    supportFragmentManager
-                        .beginTransaction()
-                        .replace(R.id.fragment_placeholder, FavoritesFragment())
-                        .addToBackStack(null)
-                        .commit()
+                    val tag = "favorites"
+                    val fragment = checkFragmentExistence(tag)
+                    changeFragment(fragment?: FavoritesFragment(), tag)
                     true
                 }
 
                 R.id.watch_later -> {
-                    Toast.makeText(this, "Посмотреть похже", Toast.LENGTH_SHORT).show()
+                    val tag = "watch_later"
+                    val fragment = checkFragmentExistence(tag)
+                    changeFragment(fragment?: WathLaterFragment(), tag)
                     true
                 }
 
                 R.id.selections -> {
-                    Toast.makeText(this, "Подборки", Toast.LENGTH_SHORT).show()
+                    val tag = "selections"
+                    val fragment = checkFragmentExistence(tag)
+                    changeFragment(fragment?: SelectionsFragment(), tag)
                     true
                 }
 
@@ -84,10 +93,22 @@ class MainActivity : AppCompatActivity() {
             .addToBackStack(null)
             .commit()
     }
+    private fun checkFragmentExistence(tag: String): Fragment? = supportFragmentManager.findFragmentByTag(tag)
+
+    private fun changeFragment(fragment: Fragment, tag: String){
+        supportFragmentManager
+            .beginTransaction()
+            .replace(R.id.fragment_placeholder, fragment, tag)
+            .addToBackStack(null)
+            .commit()
+    }
 
     @SuppressLint("MissingSuperCall")
     override fun onBackPressed() {
-        if (supportFragmentManager.backStackEntryCount == 1) {
+        if (supportFragmentManager.backStackEntryCount == 2) {
+            super.onBackPressed()
+        }
+        else {
             AlertDialog.Builder(this)
                 .setTitle("Вы хотите выйти?")
                 .setIcon(R.drawable.home_24)
@@ -101,9 +122,6 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this, "Решайся", Toast.LENGTH_SHORT).show()
                 }
                 .show()
-        }
-        else {
-            super.onBackPressed()
         }
     }
 }
