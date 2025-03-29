@@ -37,7 +37,6 @@ class HomeFragment : Fragment() {
     private var param1: String? = null
     private var param2: String? = null
     private var binding: FragmentHomeBinding? = null
-    private var binding1: MergeHomeScreenContextBinding? = null
     private val bind get() = binding!!
     private lateinit var filmsAdapter: FilmListRecyclerAdapter
 
@@ -104,33 +103,26 @@ class HomeFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         binding = FragmentHomeBinding.inflate(inflater, container, false)
-        binding1 = MergeHomeScreenContextBinding.inflate(inflater, container, false)
         val view = binding?.root
-        val view1 = binding1?.root
         return view
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val scene = Scene(binding?.root, binding1?.root)
         val searchSlide = Slide(Gravity.TOP).addTarget(R.id.search_view)
-//Создаем анимацию выезда RV снизу
         val recyclerSlide = Slide(Gravity.BOTTOM).addTarget(R.id.main_recycler)
-//Создаем экземпляр TransitionSet, который объединит все наши анимации
         val customTransition = TransitionSet().apply {
-            //Устанавливаем время, за которое будет проходить анимация
             duration = 500
-            //Добавляем сами анимации
             addTransition(recyclerSlide)
             addTransition(searchSlide)
+            AnimationHelper.performFragmentCircularrevealAnimation(view, requireActivity(), 1)
         }
-//Также запускаем через TransitionManager, но вторым параметром передаем нашу кастомную анимацию
-        TransitionManager.go(scene, customTransition)
-        val recv = binding1?.mainRecycler
+
+        val recv = binding?.mainRecycler
         apply_rv(recv)
-        binding1?.searchView?.setOnClickListener {
-            binding1?.searchView?.isIconified = false
+        binding?.searchView?.setOnClickListener {
+            binding?.searchView?.isIconified = false
         }
-        binding1?.searchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
+        binding?.searchView?.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return true
             }
