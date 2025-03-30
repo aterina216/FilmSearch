@@ -25,7 +25,6 @@ class FilmListRecyclerAdapter(private val clickListener: OnItemClickListener) : 
             is FilmViewHolder -> {
                 holder.bind(items[position])
                 val scaledRating = (items[position].rating / 10f) * 100f
-                holder.ratingDonut.animateProgress(scaledRating)
                 binding.itemContainer.setOnClickListener{
                     clickListener.click(items[position])
                 }

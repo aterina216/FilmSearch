@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.animation.AccelerateDecelerateInterpolator
 import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -94,6 +95,7 @@ class HomeFragment : Fragment() {
             8.9f
         )
     )
+    private var targetRating: Float = 0.0f
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -148,8 +150,8 @@ class HomeFragment : Fragment() {
             }
 
         })
-
     }
+
 
     fun apply_rv(recv: RecyclerView?){
         recv.apply {
@@ -167,6 +169,7 @@ class HomeFragment : Fragment() {
     }
 
     companion object {
+
         /**
          * Use this factory method to create a new instance of
          * this fragment using the provided parameters.
