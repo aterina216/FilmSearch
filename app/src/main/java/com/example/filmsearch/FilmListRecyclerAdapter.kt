@@ -24,6 +24,8 @@ class FilmListRecyclerAdapter(private val clickListener: OnItemClickListener) : 
         when (holder){
             is FilmViewHolder -> {
                 holder.bind(items[position])
+                val scaledRating = (items[position].rating / 10f) * 100f
+                holder.ratingDonut.animateProgress(scaledRating)
                 binding.itemContainer.setOnClickListener{
                     clickListener.click(items[position])
                 }
@@ -41,5 +43,9 @@ class FilmListRecyclerAdapter(private val clickListener: OnItemClickListener) : 
     }
     interface OnItemClickListener{
         fun click(film: Film)
+    }
+    fun updateRating(position: Int, newRating: Float) {
+        items[position].rating = newRating
+        notifyItemChanged(position) // Обновление только одной позиции
     }
 }
