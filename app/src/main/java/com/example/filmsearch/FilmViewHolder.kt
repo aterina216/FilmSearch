@@ -24,6 +24,5 @@ class FilmViewHolder(private val bindingItem : FilmItemBinding) : RecyclerView.V
         description.text = films.description
         ratingDonut.setProgress((films.rating * 10).toInt())
         val scaledRating = (films.rating / 10f) * 100f
-        bindingItem.ratingDonut.animateProgress(scaledRating)
     }
 }

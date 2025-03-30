@@ -20,7 +20,7 @@ class RatingDonutView @JvmOverloads constructor(
     private var centerX: Float = 0f
     private var centerY: Float = 0f
     private var stroke = 10f
-    private var progress = 0f // Изначально прогресс будет float
+    private var progress = 50
     private var scaleSize = 60f
     private lateinit var strokePaint: Paint
     private lateinit var digitPaint: Paint
@@ -48,7 +48,7 @@ class RatingDonutView @JvmOverloads constructor(
         }
     }
 
-    private fun getPaintColor(progress: Float): Int = when (progress.toInt()) {
+    private fun getPaintColor(progress: Int): Int = when (progress.toInt()) {
         in 0..25 -> Color.parseColor("#E84258") // Добавлен символ "#"
         in 26..50 -> Color.parseColor("#FD8060") // Добавлен символ "#"
         in 51..75 -> Color.parseColor("#FEE191") // Добавлен символ "#"
@@ -59,7 +59,7 @@ class RatingDonutView @JvmOverloads constructor(
         val a = context.theme.obtainStyledAttributes(attributeSet, R.styleable.RatingDonutView, 0, 0)
         try {
             stroke = a.getFloat(R.styleable.RatingDonutView_stroke, stroke)
-            progress = a.getInt(R.styleable.RatingDonutView_progress, progress.toInt()).toFloat() // преобразуем в Float
+            progress = a.getInt(R.styleable.RatingDonutView_progress, progress) // преобразуем в Float
         } finally {
             a.recycle()
         }
@@ -75,7 +75,7 @@ class RatingDonutView @JvmOverloads constructor(
     }
     fun setProgress(pr: Int) {
         //Кладем новове значение в нашу поле класса
-        progress = pr.toFloat()
+        progress = pr
         //Создаем краски с новыми цветами
         initPaint()
         //вызываем перерисовку View
@@ -114,7 +114,7 @@ class RatingDonutView @JvmOverloads constructor(
         canvas.restore()
     }
 
-    private fun convertProgressToDegrees(progress: Float): Float = progress * 3.6f
+    private fun convertProgressToDegrees(progress: Int): Float = progress * 3.6f
 
     private fun drawText(canvas: Canvas) {
         val message = String.format("%.1f", progress / 10f)
@@ -130,14 +130,4 @@ class RatingDonutView @JvmOverloads constructor(
         drawText(canvas)
     }
 
-    // Измененный метод для анимации с использованием Float
-    fun animateProgress(progress: Float) {
-        val startProgress = this.progress // Начальный прогресс
-        val endProgress = progress // Конечный прогресс
-        val animation = ObjectAnimator.ofFloat(this, "progress", startProgress, endProgress)
-
-        // Задайте длительность анимации
-        animation.duration = 1000 // 1 секунда анимации
-        animation.start() // Запуск анимации
-    }
 }
