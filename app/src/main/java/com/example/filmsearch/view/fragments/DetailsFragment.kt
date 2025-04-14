@@ -1,14 +1,14 @@
-package com.example.filmsearch
+package com.example.filmsearch.view.fragments
 
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.example.filmsearch.R
 import com.example.filmsearch.databinding.FragmentDetailsBinding
+import com.example.filmsearch.domain.Film
 
 
 class DetailsFragment : Fragment() {

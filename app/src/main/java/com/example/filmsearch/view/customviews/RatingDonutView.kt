@@ -1,7 +1,5 @@
-package com.example.filmsearch
+package com.example.filmsearch.view.customviews
 
-import android.animation.ObjectAnimator
-import android.animation.ValueAnimator
 import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Color
@@ -10,6 +8,7 @@ import android.graphics.RectF
 import android.graphics.Typeface
 import android.util.AttributeSet
 import android.view.View
+import com.example.filmsearch.R
 
 class RatingDonutView @JvmOverloads constructor(
     context: Context,

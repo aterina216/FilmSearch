@@ -1,34 +1,34 @@
-package com.example.filmsearch
+package com.example.filmsearch.view.fragments
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import com.example.filmsearch.databinding.FragmentDetailsBinding
-import com.example.filmsearch.databinding.FragmentWathLaterBinding
-
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+import androidx.fragment.app.Fragment
+import com.example.filmsearch.utils.AnimationHelper
+import com.example.filmsearch.databinding.FragmentSelectionsBinding
 
 /**
  * A simple [Fragment] subclass.
- * Use the [WathLaterFragment.newInstance] factory method to
+ * Use the [SelectionsFragment.newInstance] factory method to
  * create an instance of this fragment.
- */
-class WathLaterFragment : Fragment() {
+
+ **/
+private const val ARG_PARAM1 = "param1"
+private const val ARG_PARAM2 = "param2"
+
+class SelectionsFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
-    var binding: FragmentWathLaterBinding? = null
+
+    var binding : FragmentSelectionsBinding? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         arguments?.let {
-            param1 = it.getString(ARG_PARAM1)
-            param2 = it.getString(ARG_PARAM2)
+            param1 = it.getString(com.example.filmsearch.view.fragments.ARG_PARAM1)
+            param2 = it.getString(com.example.filmsearch.view.fragments.ARG_PARAM2)
         }
     }
 
@@ -36,15 +36,15 @@ class WathLaterFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentWathLaterBinding.inflate(layoutInflater, container, false)
-        val view = binding?.root
         // Inflate the layout for this fragment
+        binding = FragmentSelectionsBinding.inflate(layoutInflater, container, false)
+        val view = binding?.root
         return view
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        AnimationHelper.performFragmentCircularrevealAnimation(view, requireActivity(), 3)
+        AnimationHelper.performFragmentCircularrevealAnimation(view, requireActivity(), 4)
     }
 
     companion object {
@@ -54,15 +54,15 @@ class WathLaterFragment : Fragment() {
          *
          * @param param1 Parameter 1.
          * @param param2 Parameter 2.
-         * @return A new instance of fragment WathLaterFragment.
+         * @return A new instance of fragment SelectionsFragment.
          */
         // TODO: Rename and change types and number of parameters
         @JvmStatic
         fun newInstance(param1: String, param2: String) =
-            WathLaterFragment().apply {
+            SelectionsFragment().apply {
                 arguments = Bundle().apply {
-                    putString(ARG_PARAM1, param1)
-                    putString(ARG_PARAM2, param2)
+                    putString(com.example.filmsearch.view.fragments.ARG_PARAM1, param1)
+                    putString(com.example.filmsearch.view.fragments.ARG_PARAM2, param2)
                 }
             }
     }

@@ -1,13 +1,11 @@
-package com.example.filmsearch
+package com.example.filmsearch.view
 
 import android.animation.AnimatorInflater
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import com.example.filmsearch.R
 import com.example.filmsearch.databinding.ActivitySplashBinding
 
 class SplashActivity : AppCompatActivity() {
