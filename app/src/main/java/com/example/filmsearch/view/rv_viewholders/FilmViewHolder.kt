@@ -2,6 +2,7 @@ package com.example.filmsearch.view.rv_viewholders
 
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.filmsearch.data.ApiConstants
 import com.example.filmsearch.databinding.FilmItemBinding
 import com.example.filmsearch.domain.Film
 
@@ -14,10 +15,9 @@ class FilmViewHolder(private val bindingItem : FilmItemBinding) : RecyclerView.V
 
     fun bind(films: Film) {
         title.text = films.title
-        poster.setImageResource(films.poster)
         Glide.with(itemView)
             //Загружаем сам ресурс
-            .load(films.poster)
+            .load(ApiConstants.IMAGES_URL + "w342" + films.poster)
             //Центруем изображение
             .centerCrop()
             //Указываем ImageView, куда будем загружать изображение

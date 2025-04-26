@@ -1,35 +1,16 @@
 package com.example.filmsearch.domain
 
+import android.annotation.SuppressLint
 import android.os.Parcel
 import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
 
+
+@Parcelize
 data class Film(
     val title: String,
-    val poster: Int,
+    val poster: String, //У нас будет приходить ссылка на картинку, так что теперь это String
     val description: String,
-    var rating: Float = 0f,
-    var isInFavorites: Boolean = false) : Parcelable {
-    constructor(parcel: Parcel) : this(parcel.readString().toString(),
-        parcel.readInt(),
-        parcel.readString().toString())
-
-    override fun describeContents(): Int {
-        return 0
-    }
-
-    override fun writeToParcel(p0: Parcel, p1: Int) {
-        p0.writeString(title)
-        p0.writeInt(poster)
-        p0.writeString(description)
-
-    }
-    companion object CREATOR : Parcelable.Creator<Film> {
-        override fun createFromParcel(parcel: Parcel): Film {
-            return Film(parcel)
-        }
-
-        override fun newArray(size: Int): Array<Film?> {
-            return arrayOfNulls(size)
-        }
-    }
-}
+    var rating: Double = 0.0, //Приходит не целое число с API
+    var isInFavorites: Boolean = false
+) : Parcelable

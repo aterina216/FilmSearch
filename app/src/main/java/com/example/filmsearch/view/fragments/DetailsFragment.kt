@@ -27,7 +27,7 @@ class DetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val film = arguments?.get("film") as Film
         binding?.detailsToolbar?.title = film.title
-        binding?.detailsPoster?.setImageResource(film.poster)
+      //  binding?.detailsPoster?.setImageResource(film.poster)
         binding?.detailsDescription?.text = film.description
         binding?.detailsFabFavorites?.setOnClickListener {
                 if (!film.isInFavorites) {
