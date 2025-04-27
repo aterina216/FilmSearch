@@ -6,7 +6,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import com.bumptech.glide.Glide
 import com.example.filmsearch.R
+import com.example.filmsearch.data.ApiConstants
 import com.example.filmsearch.databinding.FragmentDetailsBinding
 import com.example.filmsearch.domain.Film
 
@@ -27,7 +29,13 @@ class DetailsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val film = arguments?.get("film") as Film
         binding?.detailsToolbar?.title = film.title
-      //  binding?.detailsPoster?.setImageResource(film.poster)
+        //  binding?.detailsPoster?.setImageResource(film.poster)
+        binding?.detailsPoster?.let {
+            Glide.with(this)
+                .load(ApiConstants.IMAGES_URL + "w780" + film.poster)
+                .centerCrop()
+                .into(it)
+        }
         binding?.detailsDescription?.text = film.description
         binding?.detailsFabFavorites?.setOnClickListener {
                 if (!film.isInFavorites) {

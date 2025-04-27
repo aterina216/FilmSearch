@@ -46,7 +46,7 @@ class FilmListRecyclerAdapter(private val clickListener: OnItemClickListener) : 
         fun click(film: Film)
     }
     fun updateRating(position: Int, newRating: Float) {
-      //  items[position].rating = newRating
+        //items[position].rating = newRating
         notifyItemChanged(position) // Обновление только одной позиции
     }
 }
