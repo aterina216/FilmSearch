@@ -107,6 +107,19 @@ class HomeFragment : Fragment() {
         viewModel.filmsListLiveData.observe(viewLifecycleOwner, Observer<List<Film>> {
             filmsDataBase = it
         })
+
+        binding?.mainRecycler?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                // Проверяем, если мы находимся внизу списка
+                if (!recyclerView.canScrollVertically(1)) {
+                    // Если да, то загружаем следующие фильмы
+                    viewModel.loadFilms()
+                }
+            }
+        })
+
     }
 
     fun apply_rv(recv: RecyclerView?){
