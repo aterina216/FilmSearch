@@ -1,26 +1,29 @@
-package com.example.filmsearch
+package com.example.filmsearch.view.fragments
 
 import android.os.Bundle
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.example.filmsearch.utils.AnimationHelper
+import com.example.filmsearch.view.rv_adapters.FilmListRecyclerAdapter
+import com.example.filmsearch.view.MainActivity
+import com.example.filmsearch.view.rv_adapters.TopSpacingItemDecoration
 import com.example.filmsearch.databinding.FragmentFavoritesBinding
-import com.example.filmsearch.databinding.FragmentHomeBinding
-
-// TODO: Rename parameter arguments, choose names that match
-// the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-private const val ARG_PARAM1 = "param1"
-private const val ARG_PARAM2 = "param2"
+import com.example.filmsearch.domain.Film
 
 /**
  * A simple [Fragment] subclass.
  * Use the [FavoritesFragment.newInstance] factory method to
  * create an instance of this fragment.
  */
+private const val ARG_PARAM1 = "param1"
+private const val ARG_PARAM2 = "param2"
+
 class FavoritesFragment : Fragment() {
     // TODO: Rename and change types of parameters
+
     private var param1: String? = null
     private var param2: String? = null
     private var binding: FragmentFavoritesBinding? = null
@@ -70,11 +73,12 @@ class FavoritesFragment : Fragment() {
         AnimationHelper.performFragmentCircularrevealAnimation(view, requireActivity(), 2)
         val favoritesList: List<Film> = emptyList()
         binding?.favoritesRecycler?.apply {
-            filmsAdapter = FilmListRecyclerAdapter(object : FilmListRecyclerAdapter.OnItemClickListener{
-                override fun click(film: Film) {
-                    (requireActivity() as MainActivity).launchDetailsFragment(film)
-                }
-            })
+            filmsAdapter =
+                FilmListRecyclerAdapter(object : FilmListRecyclerAdapter.OnItemClickListener {
+                    override fun click(film: Film) {
+                        (requireActivity() as MainActivity).launchDetailsFragment(film)
+                    }
+                })
             //Присваиваем адаптер
             adapter = filmsAdapter
             //Присвои layoutmanager

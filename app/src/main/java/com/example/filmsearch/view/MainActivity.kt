@@ -1,20 +1,19 @@
-package com.example.filmsearch
+package com.example.filmsearch.view
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
-import android.app.FragmentManager
-import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
-import androidx.activity.ComponentActivity
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
+import com.example.filmsearch.R
 import com.example.filmsearch.databinding.ActivityMainBinding
+import com.example.filmsearch.domain.Film
+import com.example.filmsearch.view.fragments.DetailsFragment
+import com.example.filmsearch.view.fragments.FavoritesFragment
+import com.example.filmsearch.view.fragments.HomeFragment
+import com.example.filmsearch.view.fragments.SelectionsFragment
+import com.example.filmsearch.view.fragments.WathLaterFragment
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 

@@ -1,9 +1,11 @@
-package com.example.filmsearch
+package com.example.filmsearch.view.rv_adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.example.filmsearch.view.rv_viewholders.FilmViewHolder
 import com.example.filmsearch.databinding.FilmItemBinding
+import com.example.filmsearch.domain.Film
 
 class FilmListRecyclerAdapter(private val clickListener: OnItemClickListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -24,6 +26,7 @@ class FilmListRecyclerAdapter(private val clickListener: OnItemClickListener) : 
         when (holder){
             is FilmViewHolder -> {
                 holder.bind(items[position])
+                val scaledRating = (items[position].rating / 10f) * 100f
                 binding.itemContainer.setOnClickListener{
                     clickListener.click(items[position])
                 }
@@ -41,5 +44,9 @@ class FilmListRecyclerAdapter(private val clickListener: OnItemClickListener) : 
     }
     interface OnItemClickListener{
         fun click(film: Film)
+    }
+    fun updateRating(position: Int, newRating: Float) {
+        //items[position].rating = newRating
+        notifyItemChanged(position) // Обновление только одной позиции
     }
 }

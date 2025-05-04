@@ -6,7 +6,7 @@
     android:id="@+id/fragment_watch_later"
     tools:visibility="visible"
     android:background="@drawable/shape1"
-    tools:context=".WathLaterFragment">
+    tools:context=".view.fragments.WathLaterFragment">
 
 
 

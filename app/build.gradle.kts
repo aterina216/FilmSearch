@@ -1,6 +1,7 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    id ("org.jetbrains.kotlin.plugin.parcelize")
 }
 
 android {
@@ -29,11 +30,16 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
+
+
     }
     kotlinOptions {
         jvmTarget = "11"
     }
-    buildFeatures {viewBinding = true }
+    buildFeatures {viewBinding = true
+    buildConfig = true
+    }
+
 }
 
 dependencies {
@@ -52,4 +58,8 @@ dependencies {
     implementation ("androidx.coordinatorlayout:coordinatorlayout:1.3.0")
     implementation ("com.github.bumptech.glide:glide:4.11.0")
     annotationProcessor ("com.github.bumptech.glide:compiler:4.11.0")
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.6.0")
+    implementation ("com.squareup.okhttp3:logging-interceptor:3.12.6")
+
 }
