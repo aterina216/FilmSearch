@@ -41,8 +41,10 @@ class HomeFragment : Fragment() {
     private val bind get() = binding!!
     private lateinit var filmsAdapter: FilmListRecyclerAdapter
     private val viewModel by lazy {
-        ViewModelProvider.NewInstanceFactory().create(HomeFragmentViewModel::class.java)
-    }
+      ViewModelProvider.NewInstanceFactory().create(HomeFragmentViewModel::class.java)
+  }
+
+
     private var filmsDataBase = listOf<Film>()
         //Используем backing field
         set(value) {

@@ -5,12 +5,19 @@ import androidx.lifecycle.ViewModel
 import com.example.filmsearch.App
 import com.example.filmsearch.domain.Film
 import com.example.filmsearch.domain.Interactor
+import org.koin.core.component.KoinComponent
+import org.koin.core.component.inject
 
-class HomeFragmentViewModel: ViewModel() {
+
+class HomeFragmentViewModel(// Флаг, который предотвращает повторные запросы, пока идет загрузка
+    private var isLoading: Boolean = false
+) : ViewModel(), KoinComponent {
+
+
     val filmsListLiveData = MutableLiveData<List<Film>>()
     private var currentPage = 1 // Номер текущей страницы
-    private var isLoading = false // Флаг, который предотвращает повторные запросы, пока идет загрузка
-    private var interactor: Interactor = App.instance.interactor
+    private val interactor: Interactor by inject()
+
     init {
         loadFilms()
     }
