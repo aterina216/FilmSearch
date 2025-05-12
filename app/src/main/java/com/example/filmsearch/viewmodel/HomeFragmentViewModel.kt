@@ -7,18 +7,21 @@ import com.example.filmsearch.domain.Film
 import com.example.filmsearch.domain.Interactor
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import javax.inject.Inject
 
 
 class HomeFragmentViewModel(// Флаг, который предотвращает повторные запросы, пока идет загрузка
     private var isLoading: Boolean = false
-) : ViewModel(), KoinComponent {
+) : ViewModel() {
 
 
     val filmsListLiveData = MutableLiveData<List<Film>>()
     private var currentPage = 1 // Номер текущей страницы
-    private val interactor: Interactor by inject()
+    @Inject
+    lateinit var interactor: Interactor
 
     init {
+        App.instance.dagger.inject(this)
         loadFilms()
     }
 
