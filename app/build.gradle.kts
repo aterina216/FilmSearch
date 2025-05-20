@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     id ("org.jetbrains.kotlin.plugin.parcelize")
+    alias(libs.plugins.kotlin.kapt)
 }
 
 android {
@@ -62,4 +63,6 @@ dependencies {
     implementation ("com.squareup.retrofit2:converter-gson:2.6.0")
     implementation ("com.squareup.okhttp3:logging-interceptor:3.12.6")
     implementation("io.insert-koin:koin-android:4.0.4" )
+    implementation ("com.google.dagger:dagger:2.56.2")
+    kapt ("com.google.dagger:dagger-compiler:2.56.2")
 }
