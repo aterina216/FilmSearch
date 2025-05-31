@@ -22,7 +22,12 @@ preferences: PreferenceProvider) {
         retrofitService.getFilms(getDefaultCategoryFromPreferences(), API.KEY, "ru-RU", page).enqueue(object : Callback<TmdbResultsDto> {
             override fun onResponse(call: Call<TmdbResultsDto>, response: Response<TmdbResultsDto>) {
                 //При успехе мы вызываем метод передаем onSuccess и в этот коллбэк список фильмов
-                callback.onSuccess(Conventer.convertApiListToDtoList(response.body()?.tmdbFilms))
+                //callback.onSuccess(Conventer.convertApiListToDtoList(response.body()?.tmdbFilms))
+                val list = Conventer.convertApiListToDtoList(response.body()?.tmdbFilms)
+                list.forEach{
+                    repo.putToDB(film = it)
+                }
+                callback.onSuccess(list)
             }
 
             override fun onFailure(call: Call<TmdbResultsDto>, t: Throwable) {
@@ -36,4 +41,5 @@ preferences: PreferenceProvider) {
     fun saveDefaultCategoryToPreferences(category: String) {
         preferences.saveDefaultCategory(category)
     }
+    fun getFilmsFromDB(): List<Film> = repo.getAllFromDB()
 }

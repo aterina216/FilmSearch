@@ -39,7 +39,8 @@ class HomeFragmentViewModel(// Флаг, который предотвращае
             }
 
             override fun onFailure() {
-                isLoading = false // В случае ошибки сбрасываем флаг загрузки
+                //isLoading = false // В случае ошибки сбрасываем флаг загрузки
+                filmsListLiveData.postValue(interactor.getFilmsFromDB())
             }
         })
     }
