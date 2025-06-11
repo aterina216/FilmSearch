@@ -25,7 +25,7 @@ preferences: PreferenceProvider) {
                 //callback.onSuccess(Conventer.convertApiListToDtoList(response.body()?.tmdbFilms))
                 val list = Conventer.convertApiListToDtoList(response.body()?.tmdbFilms)
                 list.forEach{
-                    repo.putToDB(film = it)
+                    repo.putToDb(list)
                 }
                 callback.onSuccess(list)
             }

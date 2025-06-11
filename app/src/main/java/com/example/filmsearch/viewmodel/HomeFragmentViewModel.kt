@@ -7,6 +7,7 @@ import com.example.filmsearch.domain.Film
 import com.example.filmsearch.domain.Interactor
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
+import java.util.concurrent.Executors
 import javax.inject.Inject
 
 
@@ -39,8 +40,9 @@ class HomeFragmentViewModel(// Флаг, который предотвращае
             }
 
             override fun onFailure() {
-                //isLoading = false // В случае ошибки сбрасываем флаг загрузки
-                filmsListLiveData.postValue(interactor.getFilmsFromDB())
+                Executors.newSingleThreadExecutor().execute {
+                    filmsListLiveData.postValue(interactor.getFilmsFromDB())
+                }
             }
         })
     }
