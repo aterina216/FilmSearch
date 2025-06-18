@@ -1,5 +1,6 @@
 package com.example.filmsearch.viewmodel
 
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.filmsearch.App
@@ -16,13 +17,16 @@ class HomeFragmentViewModel(// Флаг, который предотвращае
 ) : ViewModel() {
 
 
-    val filmsListLiveData = MutableLiveData<List<Film>>()
+
     private var currentPage = 1 // Номер текущей страницы
+    val showProgressbar: MutableLiveData<Boolean> = MutableLiveData()
     @Inject
     lateinit var interactor: Interactor
+    val filmsListLiveData: LiveData<List<Film>>
 
     init {
         App.instance.dagger.inject(this)
+        filmsListLiveData = interactor.getFilmsFromDB()
         loadFilms()
     }
 
@@ -31,24 +35,21 @@ class HomeFragmentViewModel(// Флаг, который предотвращае
         isLoading = true
 
         interactor.getFilmsFromApi(currentPage, object : ApiCallback {
-            override fun onSuccess(films: List<Film>) {
-                val currentFilms = filmsListLiveData.value.orEmpty()
-                filmsListLiveData.postValue(currentFilms + films) // Добавляем новые фильмы к уже загруженным
+            override fun onSuccess() {
 
+                showProgressbar.postValue(false)
                 currentPage++ // Увеличиваем номер страницы для следующего запроса
                 isLoading = false
             }
 
             override fun onFailure() {
-                Executors.newSingleThreadExecutor().execute {
-                    filmsListLiveData.postValue(interactor.getFilmsFromDB())
-                }
+                showProgressbar.postValue(false)
             }
         })
     }
 
     interface ApiCallback{
-        fun onSuccess(films: List<Film>)
+        fun onSuccess()
         fun onFailure()
     }
 }

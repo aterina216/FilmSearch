@@ -1,5 +1,6 @@
 package com.example.filmsearch.domain
 
+import androidx.lifecycle.LiveData
 import com.bumptech.glide.load.model.ByteArrayLoader
 import com.bumptech.glide.load.model.ByteArrayLoader.Converter
 import com.example.filmsearch.data.API
@@ -27,7 +28,7 @@ preferences: PreferenceProvider) {
                 list.forEach{
                     repo.putToDb(list)
                 }
-                callback.onSuccess(list)
+                callback.onSuccess()
             }
 
             override fun onFailure(call: Call<TmdbResultsDto>, t: Throwable) {
@@ -41,5 +42,5 @@ preferences: PreferenceProvider) {
     fun saveDefaultCategoryToPreferences(category: String) {
         preferences.saveDefaultCategory(category)
     }
-    fun getFilmsFromDB(): List<Film> = repo.getAllFromDB()
+    fun getFilmsFromDB(): LiveData<List<Film>> = repo.getAllFromDB()
 }

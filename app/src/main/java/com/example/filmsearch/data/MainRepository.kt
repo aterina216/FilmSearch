@@ -2,6 +2,7 @@ package com.example.filmsearch.data
 
 import android.content.ContentValues
 import android.database.Cursor
+import androidx.lifecycle.LiveData
 import com.example.filmsearch.R
 import com.example.filmsearch.data.dao.FilmDao
 import com.example.filmsearch.domain.Film
@@ -15,7 +16,7 @@ class MainRepository(private val filmDao: FilmDao) {
         }
     }
 
-    fun getAllFromDB(): List<Film> {
+    fun getAllFromDB(): LiveData<List<Film>> {
         return filmDao.getCachedFilms()
     }
 }
