@@ -13,6 +13,7 @@ import com.example.filmsearch.view.fragments.DetailsFragment
 import com.example.filmsearch.view.fragments.FavoritesFragment
 import com.example.filmsearch.view.fragments.HomeFragment
 import com.example.filmsearch.view.fragments.SelectionsFragment
+import com.example.filmsearch.view.fragments.SettingsFragment
 import com.example.filmsearch.view.fragments.WathLaterFragment
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -73,6 +74,12 @@ class MainActivity : AppCompatActivity() {
                     val tag = "selections"
                     val fragment = checkFragmentExistence(tag)
                     changeFragment(fragment?: SelectionsFragment(), tag)
+                    true
+                }
+                R.id.settings -> {
+                    val tag = "settings"
+                    val fragment = checkFragmentExistence(tag)
+                    changeFragment( fragment?: SettingsFragment(), tag)
                     true
                 }
 
