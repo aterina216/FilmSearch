@@ -12,14 +12,12 @@ import java.util.concurrent.Executors
 import javax.inject.Inject
 
 
-class HomeFragmentViewModel(// Флаг, который предотвращает повторные запросы, пока идет загрузка
-    private var isLoading: Boolean = false
-) : ViewModel() {
+class HomeFragmentViewModel : ViewModel() {
 
-
-
-    private var currentPage = 1 // Номер текущей страницы
+    private var currentPage = 1 // Текущая страница для пагинации
+    private var isLoading = false
     val showProgressbar: MutableLiveData<Boolean> = MutableLiveData()
+    val hasMoreData: MutableLiveData<Boolean> = MutableLiveData(true) // Флаг для наличия данных
     @Inject
     lateinit var interactor: Interactor
     val filmsListLiveData: LiveData<List<Film>>
@@ -30,26 +28,37 @@ class HomeFragmentViewModel(// Флаг, который предотвращае
         loadFilms()
     }
 
+    // Метод для загрузки фильмов с пагинацией
     fun loadFilms() {
-        if (isLoading) return // Если уже идет загрузка, ничего не делаем
+        if (isLoading) return // Если уже идет загрузка, не запрашиваем снова
+
         isLoading = true
+        showProgressbar.postValue(true)
 
+        // Запрос на сервер с номером страницы
         interactor.getFilmsFromApi(currentPage, object : ApiCallback {
-            override fun onSuccess() {
+            override fun onSuccess(films: List<Film>) {
+                if (films.isEmpty()) {
+                    hasMoreData.postValue(false) // Если фильмов нет, прекращаем пагинацию
+                } else {
+                    currentPage++ // Увеличиваем номер страницы для следующего запроса
+                }
 
+                // Сохраняем фильмы в БД
+                // repo.putToDb(films) // Это не нужно, потому что это делаем внутри Interactor
                 showProgressbar.postValue(false)
-                currentPage++ // Увеличиваем номер страницы для следующего запроса
                 isLoading = false
             }
 
             override fun onFailure() {
                 showProgressbar.postValue(false)
+                isLoading = false
             }
         })
     }
 
-    interface ApiCallback{
-        fun onSuccess()
+    interface ApiCallback {
+        fun onSuccess(films: List<Film>)
         fun onFailure()
     }
 }

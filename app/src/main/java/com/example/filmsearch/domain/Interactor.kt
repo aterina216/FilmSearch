@@ -15,32 +15,52 @@ import retrofit2.Response
 import com.example.filmsearch.utils.Conventer
 
 
-class Interactor (private val repo: MainRepository, private val retrofitService: TmdbApi, private val
-preferences: PreferenceProvider) {
-    //В конструктор мы будм передавать коллбэк из вьюмоделе, чтобы реагировать на то, когда фильмы будут получены
-    //и страницу, котороую нужно загрузить (это для пагинации)
+class Interactor(
+    private val repo: MainRepository,
+    private val retrofitService: TmdbApi,
+    private val preferences: PreferenceProvider
+) {
+
+    // Метод для получения фильмов с API
     fun getFilmsFromApi(page: Int, callback: HomeFragmentViewModel.ApiCallback) {
-        retrofitService.getFilms(getDefaultCategoryFromPreferences(), API.KEY, "ru-RU", page).enqueue(object : Callback<TmdbResultsDto> {
+        retrofitService.getFilms(
+            getDefaultCategoryFromPreferences(),
+            API.KEY,
+            "ru-RU",
+            page // передаем номер страницы
+        ).enqueue(object : Callback<TmdbResultsDto> {
             override fun onResponse(call: Call<TmdbResultsDto>, response: Response<TmdbResultsDto>) {
-                //При успехе мы вызываем метод передаем onSuccess и в этот коллбэк список фильмов
-                //callback.onSuccess(Conventer.convertApiListToDtoList(response.body()?.tmdbFilms))
-                val list = Conventer.convertApiListToDtoList(response.body()?.tmdbFilms)
-                list.forEach{
-                    repo.putToDb(list)
+                if (response.isSuccessful && response.body() != null) {
+                    val list = Conventer.convertApiListToDtoList(response.body()?.tmdbFilms)
+
+                    // Сохраняем фильмы в базу данных через репозиторий
+                    repo.putToDb(list)  // это правильный метод для сохранения фильмов в БД
+
+                    // Передаем полученные фильмы в коллбек для обработки в ViewModel
+                    callback.onSuccess(list)
+                } else {
+                    // Обработка ошибки, если ответ неуспешен
+                    callback.onFailure()
                 }
-                callback.onSuccess()
             }
 
             override fun onFailure(call: Call<TmdbResultsDto>, t: Throwable) {
-                //В случае провала вызываем другой метод коллбека
+                // Обработка ошибок запроса
                 callback.onFailure()
             }
         })
     }
-    fun getDefaultCategoryFromPreferences() = preferences.getDefaultCategory()
 
+    // Получаем категорию фильмов из настроек
+    fun getDefaultCategoryFromPreferences(): String {
+        return preferences.getDefaultCategory()
+    }
+
+    // Сохраняем выбранную категорию в настройках
     fun saveDefaultCategoryToPreferences(category: String) {
         preferences.saveDefaultCategory(category)
     }
+
+    // Получаем фильмы из базы данных
     fun getFilmsFromDB(): LiveData<List<Film>> = repo.getAllFromDB()
 }
