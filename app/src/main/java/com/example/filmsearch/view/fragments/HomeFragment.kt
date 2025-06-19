@@ -23,6 +23,7 @@ import com.example.filmsearch.view.rv_adapters.TopSpacingItemDecoration
 import com.example.filmsearch.databinding.FragmentHomeBinding
 import com.example.filmsearch.domain.Film
 import com.example.filmsearch.viewmodel.HomeFragmentViewModel
+import com.google.android.material.snackbar.Snackbar
 import java.util.Locale
 
 /**
@@ -34,7 +35,7 @@ private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
 
 
-class HomeFragment : Fragment() {
+/*class HomeFragment : Fragment() {
 
     private val viewModel by lazy {
         ViewModelProvider.NewInstanceFactory().create(HomeFragmentViewModel::class.java)
@@ -115,5 +116,103 @@ class HomeFragment : Fragment() {
         }
         binding.mainRecycler.addOnScrollListener(scrollListener!!)
     }
+}*/
+
+class HomeFragment : Fragment() {
+
+    private val viewModel by lazy {
+        ViewModelProvider.NewInstanceFactory().create(HomeFragmentViewModel::class.java)
+    }
+    private lateinit var filmsAdapter: FilmListRecyclerAdapter
+    private lateinit var binding: FragmentHomeBinding
+    private var filmsDataBase = listOf<Film>()
+        set(value) {
+            if (field == value) return
+            field = value
+            filmsAdapter.addItems(field)
+        }
+
+    private var scrollListener: RecyclerView.OnScrollListener? = null
+
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentHomeBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        AnimationHelper.performFragmentCircularrevealAnimation(view, requireActivity(), 1)
+
+        initRecyckler()
+
+        // Подписка на список фильмов
+        viewModel.filmsListLiveData.observe(viewLifecycleOwner, Observer<List<Film>> {
+            filmsDataBase = it
+            filmsAdapter.addItems(it)
+        })
+
+        // Подписка на прогрессбар
+        viewModel.showProgressbar.observe(viewLifecycleOwner, Observer<Boolean> {
+            binding.progressBar.isVisible = it
+        })
+
+        // Подписка на наличие данных
+        viewModel.hasMoreData.observe(viewLifecycleOwner, Observer { hasMore ->
+            if (!hasMore) {
+                // Если нет больше данных, отключаем пагинацию
+                scrollListener?.let { binding.mainRecycler.removeOnScrollListener(it) }
+            }
+        })
+
+        // Подписка на ошибки с явным указанием типа
+        viewModel.errorMessage.observe(viewLifecycleOwner, Observer<String> { error ->
+            showErrorSnackbar(error)
+        })
+    }
+
+    private fun initRecyckler() {
+        binding.mainRecycler.apply {
+            filmsAdapter = FilmListRecyclerAdapter(object : FilmListRecyclerAdapter.OnItemClickListener {
+                override fun click(film: Film) {
+                    (requireActivity() as MainActivity).launchDetailsFragment(film)
+                }
+            })
+            adapter = filmsAdapter
+            layoutManager = LinearLayoutManager(requireContext())
+            val decorator = TopSpacingItemDecoration(8)
+            addItemDecoration(decorator)
+        }
+
+        // Создаем и устанавливаем слушатель прокрутки
+        scrollListener = object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                val layoutManager = recyclerView.layoutManager as LinearLayoutManager
+                val totalItemCount = layoutManager.itemCount
+                val visibleItemCount = layoutManager.childCount
+                val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
+
+                if (visibleItemCount + firstVisibleItemPosition >= totalItemCount && dy > 0) {
+                    // Если есть данные для загрузки, загружаем их
+                    if (viewModel.hasMoreData.value == true) {
+                        viewModel.loadFilms()
+                    }
+                }
+            }
+        }
+        binding.mainRecycler.addOnScrollListener(scrollListener!!)
+    }
+
+    // Функция для показа снэкбара с ошибкой
+    private fun showErrorSnackbar(message: String) {
+        Snackbar.make(requireView(), message, Snackbar.LENGTH_LONG).show()
+    }
 }
+
+
 

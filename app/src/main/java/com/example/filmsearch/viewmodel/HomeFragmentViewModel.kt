@@ -6,13 +6,14 @@ import androidx.lifecycle.ViewModel
 import com.example.filmsearch.App
 import com.example.filmsearch.domain.Film
 import com.example.filmsearch.domain.Interactor
+import com.example.filmsearch.utils.SingleLiveEvent
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.util.concurrent.Executors
 import javax.inject.Inject
 
 
-class HomeFragmentViewModel : ViewModel() {
+/*class HomeFragmentViewModel : ViewModel() {
 
     private var currentPage = 1 // Текущая страница для пагинации
     private var isLoading = false
@@ -61,4 +62,58 @@ class HomeFragmentViewModel : ViewModel() {
         fun onSuccess(films: List<Film>)
         fun onFailure()
     }
+}*/
+class HomeFragmentViewModel : ViewModel() {
+
+    private var currentPage = 1 // Текущая страница для пагинации
+    private var isLoading = false
+    val showProgressbar: MutableLiveData<Boolean> = MutableLiveData()
+    val hasMoreData: MutableLiveData<Boolean> = MutableLiveData(true) // Флаг для наличия данных
+    val errorMessage: SingleLiveEvent<String> = SingleLiveEvent()  // Для передачи сообщения об ошибке
+
+    @Inject
+    lateinit var interactor: Interactor
+    val filmsListLiveData: LiveData<List<Film>>
+
+    init {
+        App.instance.dagger.inject(this)
+        filmsListLiveData = interactor.getFilmsFromDB()
+        loadFilms()
+    }
+
+    // Метод для загрузки фильмов с пагинацией
+    fun loadFilms() {
+        if (isLoading) return // Если уже идет загрузка, не запрашиваем снова
+
+        isLoading = true
+        showProgressbar.postValue(true)
+
+        // Запрос на сервер с номером страницы
+        interactor.getFilmsFromApi(currentPage, object : ApiCallback {
+            override fun onSuccess(films: List<Film>) {
+                if (films.isEmpty()) {
+                    hasMoreData.postValue(false) // Если фильмов нет, прекращаем пагинацию
+                } else {
+                    currentPage++ // Увеличиваем номер страницы для следующего запроса
+                }
+
+                showProgressbar.postValue(false)
+                isLoading = false
+            }
+
+            override fun onFailure() {
+                showProgressbar.postValue(false)
+                isLoading = false
+
+                // Передаем сообщение об ошибке в SingleLiveEvent
+                errorMessage.postValue("Ошибка получения данных с сервера.")
+            }
+        })
+    }
+
+    interface ApiCallback {
+        fun onSuccess(films: List<Film>)
+        fun onFailure()
+    }
 }
+
