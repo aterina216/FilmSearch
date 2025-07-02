@@ -55,7 +55,7 @@ class Interactor(
                         repo.putToDb(list)  // это правильный метод для сохранения фильмов в БД
                         progressBarState.send(false)
                     }
-            }}
+                }}
 
             override fun onFailure(call: Call<TmdbResultsDto>, t: Throwable) {
                 // Обработка ошибок запроса
