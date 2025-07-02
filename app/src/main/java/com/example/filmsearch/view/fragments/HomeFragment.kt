@@ -24,6 +24,11 @@ import com.example.filmsearch.databinding.FragmentHomeBinding
 import com.example.filmsearch.domain.Film
 import com.example.filmsearch.viewmodel.HomeFragmentViewModel
 import com.google.android.material.snackbar.Snackbar
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.cancel
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.Locale
 
 /**
@@ -133,6 +138,7 @@ class HomeFragment : Fragment() {
         }
 
     private var scrollListener: RecyclerView.OnScrollListener? = null
+    private lateinit var scope: CoroutineScope
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -149,19 +155,27 @@ class HomeFragment : Fragment() {
 
         initRecyckler()
 
-        // Подписка на список фильмов
-        viewModel.filmsListLiveData.observe(viewLifecycleOwner, Observer<List<Film>> {
-            filmsDataBase = it
-            filmsAdapter.addItems(it)
-        })
+       scope = CoroutineScope(Dispatchers.IO).also {
+           scope -> scope.launch {
+               viewModel.filmsListData.collect{
+                   withContext(Dispatchers.Main){
+                       filmsAdapter.addItems(it)
+                       filmsDataBase = it
+                   }
+               }
+       }
+           scope.launch {
+               for(element in viewModel.showProgressbar){
+                   launch(Dispatchers.Main) {
+                       binding.progressBar.isVisible = element
+                   }
+               }
+           }
+       }
 
-        // Подписка на прогрессбар
-        viewModel.showProgressbar.observe(viewLifecycleOwner, Observer<Boolean> {
-            binding.progressBar.isVisible = it
-        })
 
         // Подписка на наличие данных
-        viewModel.hasMoreData.observe(viewLifecycleOwner, Observer { hasMore ->
+           /* viewModel.hasMoreData.observe(viewLifecycleOwner, Observer { hasMore ->
             if (!hasMore) {
                 // Если нет больше данных, отключаем пагинацию
                 scrollListener?.let { binding.mainRecycler.removeOnScrollListener(it) }
@@ -171,7 +185,7 @@ class HomeFragment : Fragment() {
         // Подписка на ошибки с явным указанием типа
         viewModel.errorMessage.observe(viewLifecycleOwner, Observer<String> { error ->
             showErrorSnackbar(error)
-        })
+        })*/
     }
 
     private fun initRecyckler() {
@@ -211,6 +225,11 @@ class HomeFragment : Fragment() {
     // Функция для показа снэкбара с ошибкой
     private fun showErrorSnackbar(message: String) {
         Snackbar.make(requireView(), message, Snackbar.LENGTH_LONG).show()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        scope.cancel()
     }
 }
 

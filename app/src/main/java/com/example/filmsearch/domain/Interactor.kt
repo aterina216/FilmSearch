@@ -13,40 +13,55 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import com.example.filmsearch.utils.Conventer
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.launch
 
 
 class Interactor(
     private val repo: MainRepository,
     private val retrofitService: TmdbApi,
     private val preferences: PreferenceProvider
+
 ) {
 
+    val scope: CoroutineScope = CoroutineScope(Dispatchers.IO)
+    val progressBarState = Channel<Boolean>(Channel.CONFLATED)
+
     // Метод для получения фильмов с API
-    fun getFilmsFromApi(page: Int, callback: HomeFragmentViewModel.ApiCallback) {
+    fun getFilmsFromApi(page: Int) {
+
+        scope.launch {
+            progressBarState.send(true)
+        }
+
         retrofitService.getFilms(
             getDefaultCategoryFromPreferences(),
             API.KEY,
             "ru-RU",
             page // передаем номер страницы
         ).enqueue(object : Callback<TmdbResultsDto> {
-            override fun onResponse(call: Call<TmdbResultsDto>, response: Response<TmdbResultsDto>) {
+            override fun onResponse(
+                call: Call<TmdbResultsDto>,
+                response: Response<TmdbResultsDto>
+            ) {
                 if (response.isSuccessful && response.body() != null) {
                     val list = Conventer.convertApiListToDtoList(response.body()?.tmdbFilms)
 
-                    // Сохраняем фильмы в базу данных через репозиторий
-                    repo.putToDb(list)  // это правильный метод для сохранения фильмов в БД
-
-                    // Передаем полученные фильмы в коллбек для обработки в ViewModel
-                    callback.onSuccess(list)
-                } else {
-                    // Обработка ошибки, если ответ неуспешен
-                    callback.onFailure()
-                }
-            }
+                    scope.launch {
+                        // Сохраняем фильмы в базу данных через репозиторий
+                        repo.putToDb(list)  // это правильный метод для сохранения фильмов в БД
+                        progressBarState.send(false)
+                    }
+            }}
 
             override fun onFailure(call: Call<TmdbResultsDto>, t: Throwable) {
                 // Обработка ошибок запроса
-                callback.onFailure()
+                scope.launch {
+                    progressBarState.send(false)
+                }
             }
         })
     }
@@ -62,5 +77,5 @@ class Interactor(
     }
 
     // Получаем фильмы из базы данных
-    fun getFilmsFromDB(): LiveData<List<Film>> = repo.getAllFromDB()
+    fun getFilmsFromDB(): Flow<List<Film>> = repo.getAllFromDB()
 }

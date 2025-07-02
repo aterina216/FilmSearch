@@ -7,6 +7,9 @@ import com.example.filmsearch.App
 import com.example.filmsearch.domain.Film
 import com.example.filmsearch.domain.Interactor
 import com.example.filmsearch.utils.SingleLiveEvent
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.Flow
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import java.util.concurrent.Executors
@@ -67,29 +70,26 @@ class HomeFragmentViewModel : ViewModel() {
 
     private var currentPage = 1 // Текущая страница для пагинации
     private var isLoading = false
-    val showProgressbar: MutableLiveData<Boolean> = MutableLiveData()
+    var showProgressbar: Channel<Boolean>
     val hasMoreData: MutableLiveData<Boolean> = MutableLiveData(true) // Флаг для наличия данных
     val errorMessage: SingleLiveEvent<String> = SingleLiveEvent()  // Для передачи сообщения об ошибке
 
     @Inject
     lateinit var interactor: Interactor
-    val filmsListLiveData: LiveData<List<Film>>
+    val filmsListData: Flow<List<Film>>
 
     init {
         App.instance.dagger.inject(this)
-        filmsListLiveData = interactor.getFilmsFromDB()
+        showProgressbar = interactor.progressBarState
+        filmsListData = interactor.getFilmsFromDB()
         loadFilms()
     }
 
     // Метод для загрузки фильмов с пагинацией
     fun loadFilms() {
-        if (isLoading) return // Если уже идет загрузка, не запрашиваем снова
-
-        isLoading = true
-        showProgressbar.postValue(true)
 
         // Запрос на сервер с номером страницы
-        interactor.getFilmsFromApi(currentPage, object : ApiCallback {
+       /* interactor.getFilmsFromApi(currentPage, object : ApiCallback {
             override fun onSuccess(films: List<Film>) {
                 if (films.isEmpty()) {
                     hasMoreData.postValue(false) // Если фильмов нет, прекращаем пагинацию
@@ -108,7 +108,8 @@ class HomeFragmentViewModel : ViewModel() {
                 // Передаем сообщение об ошибке в SingleLiveEvent
                 errorMessage.postValue("Ошибка получения данных с сервера.")
             }
-        })
+        })*/
+        interactor.getFilmsFromApi(1)
     }
 
     interface ApiCallback {
