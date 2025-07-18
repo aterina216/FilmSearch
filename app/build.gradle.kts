@@ -70,5 +70,8 @@ dependencies {
     implementation ("androidx.room:room-ktx:2.6.0")
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
     implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
+    implementation("io.reactivex.rxjava3:rxjava:3.1.3")
+    implementation("io.reactivex.rxjava3:rxandroid:3.0.0")
+    implementation("androidx.room:room-rxjava3:2.6.0")
 
 }

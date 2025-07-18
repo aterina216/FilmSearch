@@ -8,6 +8,8 @@ import com.example.filmsearch.App
 import com.example.filmsearch.domain.Film
 import com.example.filmsearch.domain.Interactor
 import com.example.filmsearch.utils.SingleLiveEvent
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.subjects.BehaviorSubject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.Flow
@@ -24,13 +26,14 @@ class HomeFragmentViewModel : ViewModel() {
 
     private var currentPage = 1 // Текущая страница для пагинации
     private var isLoading = false
-    var showProgressbar: Channel<Boolean>
+    var showProgressbar: BehaviorSubject<Boolean>
     val hasMoreData: MutableLiveData<Boolean> = MutableLiveData(true) // Флаг для наличия данных
-    val errorMessage: SingleLiveEvent<String> = SingleLiveEvent()  // Для передачи сообщения об ошибке
+    val errorMessage: SingleLiveEvent<String> =
+        SingleLiveEvent()  // Для передачи сообщения об ошибке
 
     @Inject
     lateinit var interactor: Interactor
-    val filmsListData: Flow<List<Film>>
+    val filmsListData: Observable<List<Film>>
 
     init {
         App.instance.dagger.inject(this)
@@ -42,27 +45,6 @@ class HomeFragmentViewModel : ViewModel() {
     // Метод для загрузки фильмов с пагинацией
     fun loadFilms() {
 
-        // Запрос на сервер с номером страницы
-        /* interactor.getFilmsFromApi(currentPage, object : ApiCallback {
-             override fun onSuccess(films: List<Film>) {
-                 if (films.isEmpty()) {
-                     hasMoreData.postValue(false) // Если фильмов нет, прекращаем пагинацию
-                 } else {
-                     currentPage++ // Увеличиваем номер страницы для следующего запроса
-                 }
-
-                 showProgressbar.postValue(false)
-                 isLoading = false
-             }
-
-             override fun onFailure() {
-                 showProgressbar.postValue(false)
-                 isLoading = false
-
-                 // Передаем сообщение об ошибке в SingleLiveEvent
-                 errorMessage.postValue("Ошибка получения данных с сервера.")
-             }
-         })*/
         interactor.getFilmsFromApi(1)
     }
 

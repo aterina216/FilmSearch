@@ -13,6 +13,10 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import com.example.filmsearch.utils.Conventer
+import io.reactivex.rxjava3.core.Completable
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.schedulers.Schedulers
+import io.reactivex.rxjava3.subjects.BehaviorSubject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.channels.Channel
@@ -24,18 +28,15 @@ class Interactor(
     private val repo: MainRepository,
     private val retrofitService: TmdbApi,
     private val preferences: PreferenceProvider
-
 ) {
 
-    val scope: CoroutineScope = CoroutineScope(Dispatchers.IO)
-    val progressBarState = Channel<Boolean>(Channel.CONFLATED)
+
+    var progressBarState: BehaviorSubject<Boolean> = BehaviorSubject.create()
 
     // Метод для получения фильмов с API
     fun getFilmsFromApi(page: Int) {
 
-        scope.launch {
-            progressBarState.send(true)
-        }
+        progressBarState.onNext(true)
 
         retrofitService.getFilms(
             getDefaultCategoryFromPreferences(),
@@ -50,18 +51,17 @@ class Interactor(
                 if (response.isSuccessful && response.body() != null) {
                     val list = Conventer.convertApiListToDtoList(response.body()?.tmdbFilms)
 
-                    scope.launch {
-                        // Сохраняем фильмы в базу данных через репозиторий
-                        repo.putToDb(list)  // это правильный метод для сохранения фильмов в БД
-                        progressBarState.send(false)
+                    Completable.fromSingle<List<Film>> {
+                        repo.putToDb(list)
                     }
+                        .subscribeOn(Schedulers.io())
+                        .subscribe()
+
                 }}
 
             override fun onFailure(call: Call<TmdbResultsDto>, t: Throwable) {
                 // Обработка ошибок запроса
-                scope.launch {
-                    progressBarState.send(false)
-                }
+                progressBarState.onNext(false)
             }
         })
     }
@@ -77,5 +77,5 @@ class Interactor(
     }
 
     // Получаем фильмы из базы данных
-    fun getFilmsFromDB(): Flow<List<Film>> = repo.getAllFromDB()
+    fun getFilmsFromDB(): Observable<List<Film>> = repo.getAllFromDB()
 }

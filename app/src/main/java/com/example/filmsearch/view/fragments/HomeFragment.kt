@@ -1,39 +1,31 @@
 package com.example.filmsearch.view.fragments
 
 import android.os.Bundle
-import android.transition.Slide
-import android.transition.TransitionSet
 import android.util.Log
-import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewModelScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.filmsearch.utils.AnimationHelper
-import com.example.filmsearch.view.rv_adapters.FilmListRecyclerAdapter
-import com.example.filmsearch.view.MainActivity
-import com.example.filmsearch.R
-import com.example.filmsearch.data.MainRepository
-import com.example.filmsearch.view.rv_adapters.TopSpacingItemDecoration
 import com.example.filmsearch.databinding.FragmentHomeBinding
 import com.example.filmsearch.domain.Film
+import com.example.filmsearch.utils.AnimationHelper
+import com.example.filmsearch.utils.AutoDisposable
+import com.example.filmsearch.utils.addTo
+import com.example.filmsearch.view.MainActivity
+import com.example.filmsearch.view.rv_adapters.FilmListRecyclerAdapter
+import com.example.filmsearch.view.rv_adapters.TopSpacingItemDecoration
 import com.example.filmsearch.viewmodel.HomeFragmentViewModel
 import com.google.android.material.snackbar.Snackbar
+import io.reactivex.rxjava3.schedulers.Schedulers
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.cancelChildren
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import java.util.Locale
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 
 /**
  * A simple [Fragment] subclass.
@@ -61,11 +53,19 @@ class HomeFragment : Fragment() {
     private var scrollListener: RecyclerView.OnScrollListener? = null
     private lateinit var scope: CoroutineScope
 
+    private val autoDisposable = AutoDisposable()
+
     private var isLoading = false // Переменная для управления загрузкой данных
 
     // Текущая страница и общая информация о страницах
     private var currentPage = 1
     private var totalPages = 1
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        autoDisposable.bindTo(lifecycle)
+        retainInstance = true
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -86,37 +86,21 @@ class HomeFragment : Fragment() {
 
         initPagination()
 
-        scope = CoroutineScope(Dispatchers.IO).also {
-                scope -> scope.launch {
-            viewModel.filmsListData.collect{
-                withContext(Dispatchers.Main){
-                    filmsAdapter.addItems(it)
-                    filmsDataBase = it
-                }
+        viewModel.filmsListData
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe { list ->
+                filmsAdapter.addItems(list)
+                filmsDataBase = list
+            }.addTo(autoDisposable)
+
+        viewModel.showProgressbar
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe {
+                binding.progressBar.isVisible = it
             }
-        }
-            scope.launch {
-                for(element in viewModel.showProgressbar){
-                    launch(Dispatchers.Main) {
-                        binding.progressBar.isVisible = element
-                    }
-                }
-            }
-        }
-
-
-        // Подписка на наличие данных
-        /* viewModel.hasMoreData.observe(viewLifecycleOwner, Observer { hasMore ->
-         if (!hasMore) {
-             // Если нет больше данных, отключаем пагинацию
-             scrollListener?.let { binding.mainRecycler.removeOnScrollListener(it) }
-         }
-     })
-
-     // Подписка на ошибки с явным указанием типа
-     viewModel.errorMessage.observe(viewLifecycleOwner, Observer<String> { error ->
-         showErrorSnackbar(error)
-     })*/
+            .addTo(autoDisposable)
     }
 
     private fun initRecyckler() {
