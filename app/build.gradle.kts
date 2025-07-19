@@ -65,4 +65,13 @@ dependencies {
     implementation("io.insert-koin:koin-android:4.0.4" )
     implementation ("com.google.dagger:dagger:2.56.2")
     kapt ("com.google.dagger:dagger-compiler:2.56.2")
+    implementation ("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+    kapt ("androidx.room:room-compiler:2.6.0" )
+    implementation ("androidx.room:room-ktx:2.6.0")
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.1")
+    implementation ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.1")
+    implementation("io.reactivex.rxjava3:rxjava:3.1.3")
+    implementation("io.reactivex.rxjava3:rxandroid:3.0.0")
+    implementation("androidx.room:room-rxjava3:2.6.0")
+
 }

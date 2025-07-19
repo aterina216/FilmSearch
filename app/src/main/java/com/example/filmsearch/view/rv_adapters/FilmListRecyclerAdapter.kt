@@ -10,7 +10,7 @@ import com.example.filmsearch.domain.Film
 class FilmListRecyclerAdapter(private val clickListener: OnItemClickListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private lateinit var binding: FilmItemBinding
-    private val items = mutableListOf<Film>()
+    val items = mutableListOf<Film>()
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int,
