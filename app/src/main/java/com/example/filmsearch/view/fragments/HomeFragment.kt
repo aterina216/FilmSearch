@@ -51,7 +51,6 @@ class HomeFragment : Fragment() {
         }
 
     private var scrollListener: RecyclerView.OnScrollListener? = null
-    private lateinit var scope: CoroutineScope
 
     private val autoDisposable = AutoDisposable()
 
@@ -176,7 +175,6 @@ class HomeFragment : Fragment() {
 
     override fun onStop() {
         super.onStop()
-        scope.cancel()
     }
 
     private fun initPagination() {
