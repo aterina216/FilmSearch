@@ -52,6 +52,8 @@ class HomeFragmentViewModel : ViewModel() {
         fun onSuccess(films: List<Film>)
         fun onFailure()
     }
+
+    fun getSearchResult(search: String) = interactor.getSearchResultFromApi(search)
 }
 
 

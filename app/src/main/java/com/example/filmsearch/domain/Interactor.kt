@@ -78,4 +78,10 @@ class Interactor(
 
     // Получаем фильмы из базы данных
     fun getFilmsFromDB(): Observable<List<Film>> = repo.getAllFromDB()
+
+    fun getSearchResultFromApi(search: String): Observable<List<Film>> = retrofitService.getFilmFromSearch(API.KEY, "ru-RU", search, 1)
+        .map {
+            Conventer.convertApiListToDtoList(it.tmdbFilms)
+        }
+
 }
