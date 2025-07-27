@@ -5,8 +5,11 @@ import com.example.filmsearch.data.ApiConstants
 import com.example.filmsearch.data.MainRepository
 import com.example.filmsearch.data.TmdbApi
 import com.example.filmsearch.di.AppComponent
-import com.example.filmsearch.di.DI
+//import com.example.filmsearch.di.DI
 import com.example.filmsearch.di.DaggerAppComponent
+import com.example.filmsearch.di.modules.DatabaseModule
+import com.example.filmsearch.di.modules.DomainModule
+import com.example.filmsearch.di.modules.RemoteModule
 import com.example.filmsearch.domain.Interactor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -25,7 +28,11 @@ class App: Application() {
         super.onCreate()
         //Инициализируем экземпляр App, через который будем получать доступ к остальным переменным
         instance = this
-        dagger = DaggerAppComponent.create()
+        dagger = DaggerAppComponent.builder()
+            .remoteModule(RemoteModule())
+            .databaseModule(DatabaseModule())
+            .domainModule(DomainModule(this))
+            .build()
     }
     companion object{
         lateinit var instance: App
