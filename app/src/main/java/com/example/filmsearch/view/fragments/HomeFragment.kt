@@ -152,47 +152,36 @@ class HomeFragment : Fragment() {
         }
 
         Observable.create(ObservableOnSubscribe<String> { subscriber ->
-            //Вешаем слушатель на клавиатуру
-            binding.searchView.setOnQueryTextListener(object :
-            //Вызывается на ввод символов
-                SearchView.OnQueryTextListener {
+            binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextChange(newText: String): Boolean {
-                    filmsAdapter.items.clear()
                     subscriber.onNext(newText)
                     return false
                 }
-                //Вызывается по нажатию кнопки "Поиск"
+
                 override fun onQueryTextSubmit(query: String): Boolean {
                     subscriber.onNext(query)
                     return false
                 }
             })
         })
-            .subscribeOn(Schedulers.io())
-            .map {
-                it.toLowerCase(Locale.getDefault()).trim()
-            }
-            .debounce(800, TimeUnit.MILLISECONDS)
-            .filter {
-                //Если в поиске пустое поле, возвращаем список фильмов по умолчанию
-                viewModel.loadFilms()
-                it.isNotBlank()
-            }
-            .flatMap {
-                viewModel.getSearchResult(it)
+            .debounce(800, TimeUnit.MILLISECONDS) // Задержка перед запросом
+            .filter { it.isNotBlank() }
+            .flatMap { query ->
+                viewModel.getSearchResult(query.toLowerCase(Locale.getDefault()).trim())
             }
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeBy(
-                onError = {
-                    Toast.makeText(requireContext(), "Что-то пошло не так", Toast.LENGTH_SHORT).show()
-                },
                 onNext = {
-                    filmsAdapter.addItems(it)
+                    filmsAdapter.addItems(it) // Добавляем новые элементы
+                },
+                onError = {
+                    showErrorSnackbar("Что-то пошло не так")
                 }
             )
             .addTo(autoDisposable)
     }
+
 
     override fun onStop() {
         super.onStop()
