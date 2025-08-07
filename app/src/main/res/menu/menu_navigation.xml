@@ -20,4 +20,9 @@
         android:icon="@drawable/round_folder_special_24"
         android:title="@string/compilations"
         app:showAsAction="withText"/>
+    <item
+        android:id="@+id/settings"
+        android:icon="@drawable/round_settings_24"
+        android:title="@string/menu_settings_title_text"
+        app:showAsAction="withText"/>
 </menu>
