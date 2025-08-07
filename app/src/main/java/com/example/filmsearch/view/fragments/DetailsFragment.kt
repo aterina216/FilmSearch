@@ -5,15 +5,12 @@ import android.content.ContentValues
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
@@ -21,7 +18,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.bumptech.glide.Glide
 import com.example.filmsearch.R
-import com.example.filmsearch.data.ApiConstants
+import com.example.core_impl.entity.ApiConstants
 import com.example.filmsearch.databinding.FragmentDetailsBinding
 import com.example.filmsearch.domain.Film
 import com.example.filmsearch.viewmodel.DetailsFragmentViewModel
@@ -31,10 +28,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.koin.androidx.viewmodel.ext.android.viewModel
-import java.net.HttpURLConnection
-import java.net.URL
 
 
 class DetailsFragment : Fragment() {
@@ -55,7 +48,7 @@ class DetailsFragment : Fragment() {
         film = arguments?.get("film") as Film
         binding.detailsToolbar.title = film.title
         Glide.with(this)
-            .load(ApiConstants.IMAGES_URL + "w780" + film.poster)
+            .load(com.example.core_impl.entity.ApiConstants.IMAGES_URL + "w780" + film.poster)
             .centerCrop()
             .into(binding.detailsPoster)
         binding.detailsDescription.text = film.description
@@ -144,7 +137,7 @@ class DetailsFragment : Fragment() {
         MainScope().launch {
             binding.progressBar.isVisible = true
             val job = scope.async {
-                viewModel.loadWallpaper(ApiConstants.IMAGES_URL + "original" + film.poster)
+                viewModel.loadWallpaper(com.example.core_impl.entity.ApiConstants.IMAGES_URL + "original" + film.poster)
             }
 
             // Пожадание результата (битмапа) после выполнения async

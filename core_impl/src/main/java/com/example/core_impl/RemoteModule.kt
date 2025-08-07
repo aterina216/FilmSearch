@@ -1,14 +1,12 @@
-package com.example.filmsearch.di.modules
+package com.example.core_impl
 
-import com.example.filmsearch.BuildConfig
-import com.example.filmsearch.data.ApiConstants
-import com.example.filmsearch.data.TmdbApi
+import com.example.core_impl.entity.ApiConstants
 import dagger.Module
 import dagger.Provides
-import hu.akarnokd.rxjava3.retrofit.RxJava3CallAdapterFactory
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
+import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
