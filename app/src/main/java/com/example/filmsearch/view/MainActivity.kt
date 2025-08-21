@@ -2,9 +2,14 @@ package com.example.filmsearch.view
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
 import com.example.filmsearch.R
 import com.example.filmsearch.databinding.ActivityMainBinding
@@ -13,13 +18,20 @@ import com.example.filmsearch.view.fragments.DetailsFragment
 import com.example.filmsearch.view.fragments.FavoritesFragment
 import com.example.filmsearch.view.fragments.HomeFragment
 import com.example.filmsearch.view.fragments.SelectionsFragment
+import com.example.filmsearch.view.fragments.SettingsFragment
 import com.example.filmsearch.view.fragments.WathLaterFragment
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+    val myReceiver = MyReceiver()
+    private var originalNightMode: Int? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
+
+        originalNightMode = AppCompatDelegate.getDefaultNightMode()
+
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
@@ -30,6 +42,16 @@ class MainActivity : AppCompatActivity() {
             .add(R.id.fragment_placeholder, HomeFragment())
             .addToBackStack(null)
             .commit()
+
+        val intentFilters = IntentFilter(Intent.ACTION_POWER_CONNECTED)
+        intentFilters.addAction(Intent.ACTION_BATTERY_LOW)
+
+        registerReceiver(myReceiver, intentFilters)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterReceiver(myReceiver)
     }
 
 
@@ -49,30 +71,38 @@ class MainActivity : AppCompatActivity() {
         bottom_navigation.setOnNavigationItemSelectedListener {
 
             when (it.itemId) {
-                R.id.home ->{
+                R.id.home -> {
                     val tag = "home"
                     val fragment = checkFragmentExistence(tag)
-                    changeFragment(fragment?: HomeFragment(), tag)
+                    changeFragment(fragment ?: HomeFragment(), tag)
                     true
                 }
+
                 R.id.favorites -> {
                     val tag = "favorites"
                     val fragment = checkFragmentExistence(tag)
-                    changeFragment(fragment?: FavoritesFragment(), tag)
+                    changeFragment(fragment ?: FavoritesFragment(), tag)
                     true
                 }
 
                 R.id.watch_later -> {
                     val tag = "watch_later"
                     val fragment = checkFragmentExistence(tag)
-                    changeFragment(fragment?: WathLaterFragment(), tag)
+                    changeFragment(fragment ?: WathLaterFragment(), tag)
                     true
                 }
 
                 R.id.selections -> {
                     val tag = "selections"
                     val fragment = checkFragmentExistence(tag)
-                    changeFragment(fragment?: SelectionsFragment(), tag)
+                    changeFragment(fragment ?: SelectionsFragment(), tag)
+                    true
+                }
+
+                R.id.settings -> {
+                    val tag = "settings"
+                    val fragment = checkFragmentExistence(tag)
+                    changeFragment(fragment ?: SettingsFragment(), tag)
                     true
                 }
 
@@ -92,9 +122,11 @@ class MainActivity : AppCompatActivity() {
             .addToBackStack(null)
             .commit()
     }
-    private fun checkFragmentExistence(tag: String): Fragment? = supportFragmentManager.findFragmentByTag(tag)
 
-    private fun changeFragment(fragment: Fragment, tag: String){
+    private fun checkFragmentExistence(tag: String): Fragment? =
+        supportFragmentManager.findFragmentByTag(tag)
+
+    private fun changeFragment(fragment: Fragment, tag: String) {
         supportFragmentManager
             .beginTransaction()
             .replace(R.id.fragment_placeholder, fragment, tag)
@@ -106,8 +138,7 @@ class MainActivity : AppCompatActivity() {
     override fun onBackPressed() {
         if (supportFragmentManager.backStackEntryCount == 2) {
             super.onBackPressed()
-        }
-        else {
+        } else {
             AlertDialog.Builder(this)
                 .setTitle("Вы хотите выйти?")
                 .setIcon(R.drawable.home_24)
@@ -122,5 +153,46 @@ class MainActivity : AppCompatActivity() {
                 }
                 .show()
         }
+    }
+
+    inner class MyReceiver : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            when (intent?.action) {
+                Intent.ACTION_BATTERY_LOW -> {
+                    Toast.makeText(
+                        context,
+                        "Низкий заряд батареи. Включаем энергосберегающий режим",
+                        Toast.LENGTH_LONG
+                    ).show()
+
+                    // Сохраняем текущую тему перед изменением
+                    if (originalNightMode == null) {
+                        originalNightMode = AppCompatDelegate.getDefaultNightMode()
+                    }
+
+                    // Включаем темную тему для экономии энергии
+                    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
+                }
+
+                Intent.ACTION_POWER_CONNECTED -> {
+                    Toast.makeText(
+                        context,
+                        "Зарядка подключена. Восстанавливаем обычный режим",
+                        Toast.LENGTH_LONG
+                    ).show()
+
+                    // Восстанавливаем исходную тему
+                    originalNightMode?.let {
+                        AppCompatDelegate.setDefaultNightMode(it)
+                    } ?: run {
+                        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+                    }
+
+                }
+
+            }
+        }
+
+
     }
 }
