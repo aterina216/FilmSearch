@@ -2,6 +2,10 @@ package com.example.filmsearch.view
 
 import android.annotation.SuppressLint
 import android.app.AlertDialog
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -20,7 +24,10 @@ import com.google.android.material.bottomnavigation.BottomNavigationView
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+    val myReceiver = MyReceiver()
+
     override fun onCreate(savedInstanceState: Bundle?) {
+
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
@@ -31,6 +38,16 @@ class MainActivity : AppCompatActivity() {
             .add(R.id.fragment_placeholder, HomeFragment())
             .addToBackStack(null)
             .commit()
+
+        val intentFilters = IntentFilter(Intent.ACTION_POWER_CONNECTED)
+        intentFilters.addAction(Intent.ACTION_BATTERY_LOW)
+
+        registerReceiver(myReceiver, intentFilters)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterReceiver(myReceiver)
     }
 
 
@@ -128,6 +145,18 @@ class MainActivity : AppCompatActivity() {
                     Toast.makeText(this, "Решайся", Toast.LENGTH_SHORT).show()
                 }
                 .show()
+        }
+    }
+    inner class MyReceiver : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            when(intent?.action) {
+                Intent.ACTION_BATTERY_LOW -> {
+                    Toast.makeText(context, "Низкий заряд", Toast.LENGTH_SHORT).show()
+                }
+                Intent.ACTION_POWER_CONNECTED -> {
+                    Toast.makeText(context, "Зарядка подключена", Toast.LENGTH_SHORT).show()
+                }
+            }
         }
     }
 }
