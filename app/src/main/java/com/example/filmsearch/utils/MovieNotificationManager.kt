@@ -38,6 +38,8 @@ class MovieNotificationManager(private val context: Context) {
     fun showMovieNotification(film: Film) {
         // Создаем Intent для открытия приложения
         val intent = Intent(context, MainActivity::class.java).apply {
+
+            action = "OPEN_MOVIE_DETAILS"
             // Добавляем данные о фильме
             putExtra(NotificationConstants.EXTRA_MOVIE_ID, film.id)
             putExtra(NotificationConstants.EXTRA_MOVIE_TITLE, film.title)
@@ -50,7 +52,7 @@ class MovieNotificationManager(private val context: Context) {
         // Создаем PendingIntent
         val pendingIntent = PendingIntent.getActivity(
             context,
-            0,
+            film.id,
             intent,
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )

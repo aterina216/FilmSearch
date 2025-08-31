@@ -7,13 +7,16 @@ import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import com.example.filmsearch.R
 import com.example.filmsearch.databinding.ActivityMainBinding
 import com.example.filmsearch.domain.Film
+import com.example.filmsearch.utils.NotificationConstants
 import com.example.filmsearch.view.fragments.DetailsFragment
 import com.example.filmsearch.view.fragments.FavoritesFragment
 import com.example.filmsearch.view.fragments.HomeFragment
@@ -22,6 +25,7 @@ import com.example.filmsearch.view.fragments.SettingsFragment
 import com.example.filmsearch.view.fragments.WathLaterFragment
 import com.google.android.material.appbar.MaterialToolbar
 import com.google.android.material.bottomnavigation.BottomNavigationView
+
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
@@ -36,12 +40,15 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         val view = binding.root
         setContentView(binding.root)
+        val handledIntent = handleIntent(intent)
         initNavigation()
-        supportFragmentManager
-            .beginTransaction()
-            .add(R.id.fragment_placeholder, HomeFragment())
-            .addToBackStack(null)
-            .commit()
+       if(!handledIntent) {
+           supportFragmentManager
+               .beginTransaction()
+               .add(R.id.fragment_placeholder, HomeFragment())
+               .addToBackStack(null)
+               .commit()
+       }
 
         val intentFilters = IntentFilter(Intent.ACTION_POWER_CONNECTED)
         intentFilters.addAction(Intent.ACTION_BATTERY_LOW)
@@ -155,6 +162,53 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun handleIntent(intent: Intent?): Boolean {
+        Log.d("MainActivity", "Handling intent: ${intent?.extras}")
+
+        if (intent != null) {
+            Log.d("MainActivity", "Intent extras: ${intent.extras?.keySet()}")
+            Log.d("MainActivity", "Intent action: ${intent.action}")
+            Log.d("MainActivity", "Intent data: ${intent.data}")
+        }
+
+        // Проверяем action вместо extra
+        if (intent != null && intent.action == "OPEN_MOVIE_DETAILS") {
+            Log.d("MainActivity", "Found action = OPEN_MOVIE_DETAILS")
+
+            // Извлекаем данные о фильме (обратите внимание на имена ключей!)
+            val filmId = intent.getIntExtra("movie_id", -1)
+            val filmTitle = intent.getStringExtra("movie_title") ?: ""
+            val filmPoster = intent.getStringExtra("movie_poster") ?: ""
+            val filmDescription = intent.getStringExtra("movie_description") ?: ""
+            val filmRating = intent.getStringExtra("movie_rating")?.toFloatOrNull() ?: 0f
+
+            Log.d("MainActivity", "Film data: id=$filmId, title=$filmTitle")
+
+            if (filmId != -1) {
+                // Создаем объект Film
+                val film = Film(
+                    id = filmId,
+                    title = filmTitle,
+                    poster = filmPoster,
+                    description = filmDescription,
+                    rating = filmRating.toDouble(),
+                    isInFavorites = false
+                )
+
+                // Очищаем back stack и открываем фрагмент с деталями
+                supportFragmentManager.popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE)
+                launchDetailsFragment(film)
+                return true
+            }
+        }
+        return false
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleIntent(intent)
+    }
+
     inner class MyReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             when (intent?.action) {
@@ -192,7 +246,6 @@ class MainActivity : AppCompatActivity() {
 
             }
         }
-
 
     }
 }

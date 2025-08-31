@@ -57,7 +57,7 @@ class DetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        movieNotificationManager = MovieNotificationManager(requireContext())
+        movieNotificationManager = MovieNotificationManager(requireContext().applicationContext)
 
         film = arguments?.get("film") as Film
         binding.detailsToolbar.title = film.title
@@ -115,62 +115,6 @@ class DetailsFragment : Fragment() {
                     .show()
             }
         }
-    }
-
-    private fun showMovieNotification(film: Film) {
-
-        val intent = Intent(requireContext(), MainActivity::class.java).apply {
-            // Добавляем данные о фильме, который нужно открыть
-            putExtra("movie_id", film.id)
-            putExtra("movie_title", film.title)
-            // Устанавливаем флаги для очистки стека активностей
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        }
-
-        val pendingIntent = PendingIntent.getActivity(
-            requireContext(),
-            0, // request code
-            intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
-        )
-
-
-        // Проверяем, есть ли разрешение на показ уведомлений
-        val notificationManager =
-            requireContext().getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-
-        // Для Android 13+ нужно проверять разрешение
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            if (ContextCompat.checkSelfPermission(
-                    requireContext(),
-                    android.Manifest.permission.POST_NOTIFICATIONS
-                ) != PackageManager.PERMISSION_GRANTED
-            ) {
-                // Запрашиваем разрешение
-                requestPermissions(
-                    arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
-                    123 // произвольный код запроса
-                )
-                return
-            }
-        }
-
-        // Показываем уведомление
-        val notification =
-            NotificationCompat.Builder(requireContext(), NotificationHelper.CHANNEL_ID)
-                .setSmallIcon(R.drawable.outline_movie_24)
-                .setContentTitle("Посмотреть позже")
-                .setContentText(film.title)
-                .setContentInfo("Рейтинг: ${film.rating}")
-                .setPriority(NotificationCompat.PRIORITY_HIGH) // Повышаем приоритет
-                .setAutoCancel(true)
-                .setContentIntent(pendingIntent)
-                .build()
-
-        notificationManager.notify(film.id, notification)
-
-        // Добавляем лог для отладки
-        Log.d("Notification", "Уведомление показано")
     }
 
     override fun onRequestPermissionsResult(
