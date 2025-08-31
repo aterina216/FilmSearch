@@ -1,18 +1,13 @@
 package com.example.filmsearch
 
 import android.app.Application
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
-import android.widget.Toast
 import com.example.core_impl.DaggerRemoteComponent
 import com.example.filmsearch.di.AppComponent
 //import com.example.filmsearch.di.DI
 import com.example.filmsearch.di.DaggerAppComponent
 import com.example.filmsearch.di.modules.DatabaseModule
 import com.example.filmsearch.di.modules.DomainModule
-import com.example.core_impl.RemoteModule
+import com.example.filmsearch.utils.MovieNotificationManager
 
 class App: Application() {
 
@@ -29,6 +24,8 @@ class App: Application() {
             .databaseModule(DatabaseModule())
             .domainModule(DomainModule(this))
             .build()
+
+        MovieNotificationManager(this).createNotificationChannel()
 
     }
 

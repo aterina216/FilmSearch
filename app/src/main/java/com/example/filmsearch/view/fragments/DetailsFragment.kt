@@ -1,26 +1,35 @@
 package com.example.filmsearch.view.fragments
 
 import android.Manifest
+import android.app.NotificationManager
+import android.app.PendingIntent
 import android.content.ContentValues
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.bumptech.glide.Glide
 import com.example.filmsearch.R
-import com.example.core_impl.entity.ApiConstants
 import com.example.filmsearch.databinding.FragmentDetailsBinding
 import com.example.filmsearch.domain.Film
+import com.example.filmsearch.utils.MovieNotificationManager
+import com.example.filmsearch.utils.NotificationConstants
+import com.example.filmsearch.utils.NotificationHelper
+import com.example.filmsearch.view.MainActivity
 import com.example.filmsearch.viewmodel.DetailsFragmentViewModel
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.CoroutineScope
@@ -36,6 +45,8 @@ class DetailsFragment : Fragment() {
     private val scope = CoroutineScope(Dispatchers.IO)
     private val viewModel: DetailsFragmentViewModel by viewModels()
 
+    private lateinit var movieNotificationManager: MovieNotificationManager
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?,
@@ -45,6 +56,9 @@ class DetailsFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+
+        movieNotificationManager = MovieNotificationManager(requireContext())
+
         film = arguments?.get("film") as Film
         binding.detailsToolbar.title = film.title
         Glide.with(this)
@@ -65,7 +79,10 @@ class DetailsFragment : Fragment() {
 
         binding.detailsFab.setOnClickListener {
             val intent = Intent(Intent.ACTION_SEND).apply {
-                putExtra(Intent.EXTRA_TEXT, "Check out this film: ${film.title} \n\n ${film.description}")
+                putExtra(
+                    Intent.EXTRA_TEXT,
+                    "Check out this film: ${film.title} \n\n ${film.description}"
+                )
                 type = "text/plain"
             }
             startActivity(Intent.createChooser(intent, "Share To:"))
@@ -74,7 +91,107 @@ class DetailsFragment : Fragment() {
         binding.detailsFabDownloadWp.setOnClickListener {
             performAsyncLoadOfPoster()
         }
+
+        binding.detailsFabNotification.setOnClickListener {
+            film.let {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    if (ContextCompat.checkSelfPermission(
+                            requireContext(),
+                            android.Manifest.permission.POST_NOTIFICATIONS
+                        ) != PackageManager.PERMISSION_GRANTED
+                    ) {
+                        // Запрашиваем разрешение
+                        requestPermissions(
+                            arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
+                            NotificationConstants.NOTIFICATION_PERMISSION_REQUEST_CODE
+                        )
+                        return@setOnClickListener
+                    }
+                }
+
+                movieNotificationManager.showMovieNotification(it)
+            } ?: run {
+                Toast.makeText(requireContext(), "Данные фильма не загружены", Toast.LENGTH_SHORT)
+                    .show()
+            }
+        }
     }
+
+    private fun showMovieNotification(film: Film) {
+
+        val intent = Intent(requireContext(), MainActivity::class.java).apply {
+            // Добавляем данные о фильме, который нужно открыть
+            putExtra("movie_id", film.id)
+            putExtra("movie_title", film.title)
+            // Устанавливаем флаги для очистки стека активностей
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+
+        val pendingIntent = PendingIntent.getActivity(
+            requireContext(),
+            0, // request code
+            intent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+
+
+        // Проверяем, есть ли разрешение на показ уведомлений
+        val notificationManager =
+            requireContext().getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        // Для Android 13+ нужно проверять разрешение
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            if (ContextCompat.checkSelfPermission(
+                    requireContext(),
+                    android.Manifest.permission.POST_NOTIFICATIONS
+                ) != PackageManager.PERMISSION_GRANTED
+            ) {
+                // Запрашиваем разрешение
+                requestPermissions(
+                    arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
+                    123 // произвольный код запроса
+                )
+                return
+            }
+        }
+
+        // Показываем уведомление
+        val notification =
+            NotificationCompat.Builder(requireContext(), NotificationHelper.CHANNEL_ID)
+                .setSmallIcon(R.drawable.outline_movie_24)
+                .setContentTitle("Посмотреть позже")
+                .setContentText(film.title)
+                .setContentInfo("Рейтинг: ${film.rating}")
+                .setPriority(NotificationCompat.PRIORITY_HIGH) // Повышаем приоритет
+                .setAutoCancel(true)
+                .setContentIntent(pendingIntent)
+                .build()
+
+        notificationManager.notify(film.id, notification)
+
+        // Добавляем лог для отладки
+        Log.d("Notification", "Уведомление показано")
+    }
+
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray,
+    ) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+
+        if (requestCode == NotificationConstants.NOTIFICATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Разрешение получено, показываем уведомление
+                film?.let {
+                    movieNotificationManager.showMovieNotification(it)
+                }
+            } else {
+                Toast.makeText(requireContext(), "Нужно разрешение на показ уведомлений", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
 
     private fun checkPermission(): Boolean {
         return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
@@ -108,7 +225,8 @@ class DetailsFragment : Fragment() {
                 put(MediaStore.Images.Media.RELATIVE_PATH, "Pictures/FilmsSearchApp")
             }
             val contentResolver = requireActivity().contentResolver
-            val uri = contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
+            val uri =
+                contentResolver.insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, contentValues)
             val outputStream = uri?.let { contentResolver.openOutputStream(it) }
             outputStream?.use {
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it)
