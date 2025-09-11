@@ -56,13 +56,35 @@ dependencies {
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
     implementation("com.google.android.material:material:1.12.0")
-    implementation ("androidx.coordinatorlayout:coordinatorlayout:1.3.0")
-    implementation ("com.github.bumptech.glide:glide:4.11.0")
-    annotationProcessor ("com.github.bumptech.glide:compiler:4.11.0")
-    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation ("com.squareup.retrofit2:converter-gson:2.6.0")
-    implementation ("com.squareup.okhttp3:logging-interceptor:3.12.6")
-    implementation("io.insert-koin:koin-android:4.0.4" )
-    implementation ("com.google.dagger:dagger:2.56.2")
-    kapt ("com.google.dagger:dagger-compiler:2.56.2")
+    implementation("androidx.coordinatorlayout:coordinatorlayout:1.3.0")
+    implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+
+// Glide
+    implementation("com.github.bumptech.glide:glide:4.11.0")
+    kapt("com.github.bumptech.glide:compiler:4.11.0")
+
+// Retrofit
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0") // Обновите до 2.9.0
+    implementation("com.squareup.okhttp3:logging-interceptor:4.12.0") // Обновите до 4.x
+    implementation("com.squareup.retrofit2:adapter-rxjava3:2.9.0") // Должен совпадать с retrofit!
+
+// RxJava
+    implementation("io.reactivex.rxjava3:rxjava:3.1.5")
+    implementation("io.reactivex.rxjava3:rxandroid:3.0.2")
+    implementation("io.reactivex.rxjava3:rxkotlin:3.0.1")
+
+// Room
+    implementation("androidx.room:room-ktx:2.6.0")
+    implementation("androidx.room:room-rxjava3:2.6.0")
+    kapt("androidx.room:room-compiler:2.6.0")
+
+// DI
+    implementation("io.insert-koin:koin-android:4.0.4")
+    implementation("com.google.dagger:dagger:2.56.2")
+    kapt("com.google.dagger:dagger-compiler:2.56.2")
+
+// Module
+    implementation(project(":core_impl"))
+
 }
