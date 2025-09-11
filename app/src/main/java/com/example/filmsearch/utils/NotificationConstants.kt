@@ -18,4 +18,8 @@ object NotificationConstants {
 
     // ID для уведомлений
     const val NOTIFICATION_ID = 1
+
+    const val FILM_BUNDLE_KEY = "FILM_BUNDLE"
+    const val FILM_KEY = "FILM_KEY"
+    const val ACTION_REQUEST_SCHEDULE_EXACT_ALARM = "android.settings.REQUEST_SCHEDULE_EXACT_ALARM"
 }

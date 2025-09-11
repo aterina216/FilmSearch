@@ -109,6 +109,21 @@
         app:srcCompat="@drawable/outline_notifications_24"
         app:tint="@android:color/white" />
 
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/reminder"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:backgroundTint="@color/design_default_color_primary_dark"
+        android:clickable="true"
+        android:translationX="145dp"
+        app:borderWidth="0dp"
+        app:layout_anchor="@+id/details_fab_download_wp"
+        app:layout_anchorGravity="center"
+        app:srcCompat="@drawable/outline_nest_clock_farsight_analog_24"
+        app:tint="@android:color/white" />
+
+
     <ProgressBar
         android:id="@+id/progress_bar"
         android:visibility="invisible"

@@ -1,6 +1,7 @@
 package com.example.filmsearch.view.fragments
 
 import android.Manifest
+import android.app.AlarmManager
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.ContentValues
@@ -11,6 +12,7 @@ import android.graphics.Bitmap
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.provider.Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -32,11 +34,14 @@ import com.example.filmsearch.utils.NotificationHelper
 import com.example.filmsearch.view.MainActivity
 import com.example.filmsearch.viewmodel.DetailsFragmentViewModel
 import com.google.android.material.snackbar.Snackbar
+import com.google.android.material.timepicker.MaterialTimePicker
+import com.google.android.material.timepicker.TimeFormat
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
+import java.util.Calendar
 
 
 class DetailsFragment : Fragment() {
@@ -115,6 +120,42 @@ class DetailsFragment : Fragment() {
                     .show()
             }
         }
+        binding.reminder.setOnClickListener {
+            film?.let { currentFilm ->
+                // Проверяем разрешения
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) {
+                    // Для Android 12+ проверяем разрешение SCHEDULE_EXACT_ALARM
+                    val alarmManager = requireContext().getSystemService(Context.ALARM_SERVICE) as AlarmManager
+                    if (!alarmManager.canScheduleExactAlarms()) {
+                        // Запрашиваем разрешение
+                        val intent = Intent(ACTION_REQUEST_SCHEDULE_EXACT_ALARM)
+                        startActivity(intent)
+                        return@setOnClickListener
+                    }
+                }
+
+                // Проверяем разрешение на уведомления (как было раньше)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    if (ContextCompat.checkSelfPermission(
+                            requireContext(),
+                            android.Manifest.permission.POST_NOTIFICATIONS
+                        ) != PackageManager.PERMISSION_GRANTED
+                    ) {
+                        requestPermissions(
+                            arrayOf(android.Manifest.permission.POST_NOTIFICATIONS),
+                            NotificationConstants.NOTIFICATION_PERMISSION_REQUEST_CODE
+                        )
+                        return@setOnClickListener
+                    }
+                }
+
+                // Если все разрешения есть, показываем диалог выбора времени
+                movieNotificationManager.notificationSet(requireContext(), currentFilm)
+            } ?: run {
+                Toast.makeText(requireContext(), "Данные фильма не загружены", Toast.LENGTH_SHORT).show()
+            }
+        }
+
     }
 
     override fun onRequestPermissionsResult(
