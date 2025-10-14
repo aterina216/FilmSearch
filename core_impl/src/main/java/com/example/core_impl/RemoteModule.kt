@@ -1,13 +1,12 @@
-package com.example.filmsearch.di.modules
+package com.example.core_impl
 
-import com.example.filmsearch.BuildConfig
-import com.example.filmsearch.data.ApiConstants
-import com.example.filmsearch.data.TmdbApi
+import com.example.core_impl.entity.ApiConstants
 import dagger.Module
 import dagger.Provides
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
+import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
@@ -32,6 +31,7 @@ class RemoteModule {
     fun provideRetrofit(okHttpClient: OkHttpClient) : Retrofit = Retrofit.Builder()
         .baseUrl(ApiConstants.BASE_URL)
         .addConverterFactory(GsonConverterFactory.create())
+        .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
         .client(okHttpClient)
         .build()
 
