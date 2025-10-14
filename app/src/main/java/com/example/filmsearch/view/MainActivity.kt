@@ -16,6 +16,7 @@ import androidx.fragment.app.FragmentManager
 import com.example.filmsearch.R
 import com.example.filmsearch.databinding.ActivityMainBinding
 import com.example.filmsearch.domain.Film
+import com.example.filmsearch.utils.AppConfig
 import com.example.filmsearch.utils.NotificationConstants
 import com.example.filmsearch.view.fragments.DetailsFragment
 import com.example.filmsearch.view.fragments.FavoritesFragment
@@ -86,6 +87,14 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 R.id.favorites -> {
+
+                    if(!AppConfig.isPaidVersion){
+                        Toast.makeText(this,
+                            "Функция \"Избранное\" доступна только в платной версии",
+                            Toast.LENGTH_SHORT).show()
+                        return@setOnNavigationItemSelectedListener false
+                    }
+
                     val tag = "favorites"
                     val fragment = checkFragmentExistence(tag)
                     changeFragment(fragment ?: FavoritesFragment(), tag)
@@ -100,6 +109,14 @@ class MainActivity : AppCompatActivity() {
                 }
 
                 R.id.selections -> {
+
+                    if(!AppConfig.isPaidVersion){
+                        Toast.makeText(this,
+                            "Функция \"Подборки\" доступна только в платной версии",
+                            Toast.LENGTH_SHORT).show()
+                        return@setOnNavigationItemSelectedListener false
+                    }
+
                     val tag = "selections"
                     val fragment = checkFragmentExistence(tag)
                     changeFragment(fragment ?: SelectionsFragment(), tag)

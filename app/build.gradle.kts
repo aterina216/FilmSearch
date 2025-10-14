@@ -41,6 +41,20 @@ android {
     buildConfig = true
     }
 
+    flavorDimensions += "version"
+    productFlavors {
+        create("free"){
+            dimension = "version"
+            applicationIdSuffix = ".free"
+            buildConfigField("boolean", "IS_PAID", "false")
+        }
+        create("paid") {
+            dimension = "version"
+            applicationIdSuffix = ".paid" // package.name.paid
+            buildConfigField("boolean", "IS_PAID", "true")
+        }
+    }
+
 }
 
 dependencies {
