@@ -12,6 +12,8 @@ constraintlayout = "2.2.0"
 navigationFragmentKtx = "2.8.7"
 navigationUiKtx = "2.8.7"
 daggerVersion = "2.56.2"
+googleGmsGoogleServices = "4.4.4"
+firebaseConfig = "23.0.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -26,10 +28,12 @@ androidx-navigation-fragment-ktx = { group = "androidx.navigation", name = "navi
 androidx-navigation-ui-ktx = { group = "androidx.navigation", name = "navigation-ui-ktx", version.ref = "navigationUiKtx" }
 dagger = {group = "com.google.dagger", name = "dagger", version.ref = "daggerVersion"}
 daggerCompiler = {group = "com.google.dagger", name = "dagger-compiler", version.ref = "daggerVersion"}
+firebase-config = { group = "com.google.firebase", name = "firebase-config", version.ref = "firebaseConfig" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-kapt = {id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin"}
 android-library = { id = "com.android.library", version.ref = "agp" }
+google-gms-google-services = { id = "com.google.gms.google-services", version.ref = "googleGmsGoogleServices" }
 

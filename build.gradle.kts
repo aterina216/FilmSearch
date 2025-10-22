@@ -5,4 +5,5 @@ plugins {
     id ("org.jetbrains.kotlin.plugin.parcelize") version "1.7.20" apply  false
     alias(libs.plugins.kotlin.kapt) apply false
     alias(libs.plugins.android.library) apply false
+    alias(libs.plugins.google.gms.google.services) apply false
 }

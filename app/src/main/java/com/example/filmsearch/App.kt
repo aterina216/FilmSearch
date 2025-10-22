@@ -13,6 +13,7 @@ class App: Application() {
 
     lateinit var dagger: AppComponent
     val remoteProvider = DaggerRemoteComponent.create()
+    var isPromoShown = false
 
 
     override fun onCreate() {
